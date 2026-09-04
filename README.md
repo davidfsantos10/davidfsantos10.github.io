@@ -9,7 +9,7 @@ Este guia foi escrito para quem **nunca publicou um site antes** — siga na ord
 ## 1. O que tem em cada arquivo
 
 ```
-projeto-release/
+davidfsantos10.github.io/
 ├── index.html          → Página principal (site inteiro)
 ├── privacidade.html     → Política de Privacidade (obrigatória para anúncios)
 ├── assets/
@@ -33,23 +33,15 @@ Isso é só para conferir visualmente — ainda não está "no ar" para outras p
 
 ---
 
-## 3. Publicar de graça com GitHub Pages (recomendado)
+## 3. Publicado de graça com GitHub Pages ✅
 
-Como o projeto já está no GitHub, a forma mais simples e **100% gratuita** de publicar é o **GitHub Pages**.
+O site já está no ar, publicado a partir deste repositório (que foi renomeado para `davidfsantos10.github.io` — esse nome especial faz o GitHub Pages servir o site direto na raiz do domínio, sem precisar de domínio próprio):
 
-### Passo a passo
+**`https://davidfsantos10.github.io/`**
 
-1. Acesse o repositório no site do GitHub (`davidfsantos10/projeto-release`).
-2. Garanta que os arquivos deste site estejam na branch principal (`main`). Se você estiver revisando numa outra branch (ex.: `claude/release-generator-website-1jbiqe`), primeiro abra um Pull Request e faça o merge para a `main`.
-3. No repositório, clique em **Settings** (Configurações).
-4. No menu lateral, clique em **Pages**.
-5. Em **Source**, selecione a branch `main` e a pasta `/ (root)`.
-6. Clique em **Save**.
-7. Aguarde 1–2 minutos. O GitHub vai mostrar o endereço do seu site, algo como:
-   `https://davidfsantos10.github.io/projeto-release/`
-8. Pronto! Esse é o link que você pode compartilhar.
-
-Sempre que você (ou o Claude) fizer uma alteração e enviar (`push`) para a branch `main`, o site atualiza sozinho em 1–2 minutos.
+- **Fonte:** Settings → Pages → branch `claude/release-generator-website-1jbiqe`, pasta `/ (root)`.
+- Sempre que uma alteração for enviada (`git push`) para essa branch, o site atualiza sozinho em 1–2 minutos.
+- Se um dia quiser voltar a usar um nome de repositório "normal" (ex.: `projeto-release`) em vez do formato especial `usuario.github.io`, será necessário configurar um domínio próprio (seção abaixo) para manter uma URL "raiz" — do contrário a URL volta a ter `/nome-do-repositorio` no final.
 
 ### Quero um domínio próprio (ex: geradorderelease.com.br)
 
