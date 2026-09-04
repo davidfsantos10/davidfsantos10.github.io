@@ -74,7 +74,7 @@ O jeito mais comum e confiável de colocar anúncios em um site é o **Google Ad
 
 - O site **precisa estar no ar** (publicado, com um link acessível — veja o passo 3).
 - É **obrigatório** ter uma Política de Privacidade publicada — já deixei pronta em `privacidade.html`, mas **revise o conteúdo** (está marcado como "[MODELO]") antes de divulgar, principalmente as seções sobre quais dados o app realmente coleta.
-- Tenha um e-mail de contato válido para trocar nos textos (procure por `contato@seudominio.com.br` nos arquivos e substitua).
+- E-mail de contato já configurado: `davidpmfsantos@gmail.com` (rodapé, FAQ e política de privacidade).
 
 ### 4.2 Cadastro
 
@@ -154,7 +154,7 @@ A pasta `assets/img/` está vazia — o site usa um "mockup" de telefone feito s
 ## 6. Checklist antes de divulgar o site de verdade
 
 - [ ] Revisar o texto da `privacidade.html` (está marcado como "[MODELO]") com atenção especial à seção "Quais dados coletamos" — descreva exatamente o que o app faz com os dados preenchidos.
-- [ ] Trocar `contato@seudominio.com.br` pelo seu e-mail real (aparece em `index.html`, `privacidade.html`).
+- [x] E-mail de contato atualizado (`davidpmfsantos@gmail.com`) em `index.html` e `privacidade.html`.
 - [x] Links de download apontando para as páginas de instalação (Netlify) — trocar pelas lojas oficiais quando/se publicar lá.
 - [ ] Publicar o site (GitHub Pages — passo 3).
 - [ ] Cadastrar no Google AdSense e aguardar aprovação (passo 4).
