@@ -121,21 +121,20 @@ Para cada um desses blocos:
 
 ---
 
-## 5. Quando o app estiver pronto: atualizar os links de download
+## 5. Links de download
 
-Hoje os botões de download apontam para `#` (âncora vazia) como placeholder. Quando o app for publicado nas lojas, procure por estes trechos no `index.html` e troque o `href="#"` pelo link real:
+Todos os botões "Baixar para Android" / "Baixar para iPhone" do site (no topo, na seção de instalação e na seção final) já apontam para as páginas de instalação reais:
 
-```html
-<a href="#" class="btn btn-android" id="androidDownload">...
-<a href="#" class="btn btn-ios" id="iosDownload">...
-```
+- **Android:** `https://gerador-de-release.netlify.app/android.html`
+- **iPhone:** `https://gerador-de-release.netlify.app/ios.html`
 
-- **Android (Google Play):** o link tem o formato
-  `https://play.google.com/store/apps/details?id=com.seudominio.geradorderelease`
-- **Android (APK direto, se não for publicar na Play Store):** hospede o arquivo `.apk` (por exemplo, como um "Release" no próprio GitHub, em Releases) e use o link direto do arquivo.
-- **iPhone (App Store):** o link tem o formato
-  `https://apps.apple.com/br/app/nome-do-app/idXXXXXXXXXX`
-- **iPhone (TestFlight, enquanto em beta):** use o link de convite gerado pelo App Store Connect, algo como `https://testflight.apple.com/join/XXXXXXXX`.
+Os botões abrem essas páginas em uma nova aba (`target="_blank"`), já que elas ficam em outro domínio (Netlify).
+
+Se um dia o app for publicado também na Google Play ou na App Store, procure por `href="https://gerador-de-release.netlify.app/..."` no `index.html` (aparece 6 vezes) e troque pelo link da loja, no formato:
+
+- **Google Play:** `https://play.google.com/store/apps/details?id=com.seudominio.geradorderelease`
+- **App Store:** `https://apps.apple.com/br/app/nome-do-app/idXXXXXXXXXX`
+- **TestFlight (beta):** `https://testflight.apple.com/join/XXXXXXXX`
 
 Também existem 3 outros lugares com botões "Baixar" (no menu, no topo/hero e na seção de instalação) — todos apontam para `#download`, que rola até a seção final. Você só precisa atualizar os 2 links reais dentro da `download-cta` (seção "Pronto para agilizar seus releases?").
 
@@ -156,7 +155,7 @@ A pasta `assets/img/` está vazia — o site usa um "mockup" de telefone feito s
 
 - [ ] Revisar o texto da `privacidade.html` (está marcado como "[MODELO]") com atenção especial à seção "Quais dados coletamos" — descreva exatamente o que o app faz com os dados preenchidos.
 - [ ] Trocar `contato@seudominio.com.br` pelo seu e-mail real (aparece em `index.html`, `privacidade.html`).
-- [ ] Trocar os links de download (`#`) pelos links reais das lojas, quando disponíveis.
+- [x] Links de download apontando para as páginas de instalação (Netlify) — trocar pelas lojas oficiais quando/se publicar lá.
 - [ ] Publicar o site (GitHub Pages — passo 3).
 - [ ] Cadastrar no Google AdSense e aguardar aprovação (passo 4).
 - [ ] Colar os blocos de anúncio depois da aprovação.
