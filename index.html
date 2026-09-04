@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Release — Ocorrências prontas para o WhatsApp em segundos</title>
+<meta name="description" content="Aplicativo gratuito para Android e iPhone que gera o release da ocorrência já formatado, pronto para copiar e colar no WhatsApp. Mais agilidade e padronização no dia a dia do policial.">
+
+<!-- Favicon simples (SVG embutido, sem precisar de arquivo externo) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%231E3A8A'/%3E%3Ctext x='50' y='66' font-size='58' font-family='Arial' font-weight='bold' fill='%2314B8A6' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+
+<!--
+  ======================================================================
+  GOOGLE ADSENSE — cole aqui a tag de verificação da sua conta assim que
+  ela for aprovada. Veja o passo a passo completo no README.md (seção
+  "Como monetizar com anúncios").
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-SEU_ID_AQUI" crossorigin="anonymous"></script>
+  ======================================================================
+-->
+</head>
+<body>
+
+<a class="skip-link" href="#conteudo" style="position:absolute;left:-999px;">Pular para o conteúdo</a>
+
+<!-- ============================== HEADER ============================== -->
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">R</span>
+      Gerador de Release
+    </a>
+
+    <nav class="main-nav" id="mainNav">
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#instalacao">Instalação</a>
+      <a href="#download">Baixar</a>
+      <a href="#faq">Dúvidas</a>
+      <a href="privacidade.html">Privacidade</a>
+    </nav>
+
+    <div class="nav-cta">
+      <a href="#download" class="btn btn-outline">Baixar app</a>
+    </div>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="conteudo">
+
+  <!-- ============================== HERO ============================== -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-text">
+        <span class="hero-badge">📱 Grátis · Android e iPhone</span>
+        <h1>O release da sua ocorrência pronto em segundos.</h1>
+        <p class="hero-sub">Preencha os campos, gere o texto formatado e copie e cole direto no WhatsApp. Mais agilidade, padronização e menos tempo digitando no fim do turno.</p>
+
+        <div class="hero-actions">
+          <a href="#download" class="btn btn-android">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.43 11.43 0 0 0-8.94 0L5.65 5.67c-.19-.28-.55-.37-.84-.22-.3.16-.42.54-.26.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52M7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5m10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5"/></svg>
+            Baixar para Android
+          </a>
+          <a href="#download" class="btn btn-ios">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-3 2.45-4.44 2.56-4.51-1.4-2.04-3.58-2.32-4.36-2.35-1.85-.19-3.62 1.09-4.56 1.09-.94 0-2.39-1.06-3.93-1.03-2.02.03-3.88 1.18-4.92 2.99-2.1 3.64-.54 9.02 1.51 11.98 1 1.45 2.19 3.07 3.75 3.01 1.51-.06 2.08-.97 3.9-.97 1.82 0 2.34.97 3.93.94 1.62-.03 2.65-1.47 3.64-2.93 1.15-1.68 1.62-3.31 1.64-3.39-.04-.02-3.14-1.21-3.17-4.83M14.7 3.36c.83-1 1.39-2.39 1.24-3.78-1.19.05-2.64.8-3.5 1.79-.77.88-1.44 2.29-1.26 3.64 1.32.1 2.67-.67 3.52-1.65"/></svg>
+            Baixar para iPhone
+          </a>
+        </div>
+
+        <div class="hero-meta">
+          <div><strong>100%</strong><span>Gratuito</span></div>
+          <div><strong>&lt; 30s</strong><span>Para gerar um release</span></div>
+          <div><strong>0</strong><span>Internet necessária*</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="phone-mock">
+          <div class="phone-screen">
+            <h4>Novo release</h4>
+            <div class="mock-field"><b>Tipo de ocorrência</b>Perturbação do sossego</div>
+            <div class="mock-field"><b>Endereço</b>Rua das Flores, 123</div>
+            <div class="mock-field"><b>Guarnição</b>Viatura 07 — ROTA</div>
+            <div class="mock-btn">Gerar release ✨</div>
+            <div class="mock-output">
+              *RELEASE Nº 128*<br>
+              📍 Rua das Flores, 123<br>
+              🚔 VTR 07 — ROTA<br>
+              📋 Perturbação do sossego...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== ANÚNCIO (topo) ============================== -->
+  <div class="ad-slot ad-slot--section">
+    <div class="ad-inner">
+      <!-- ESPAÇO DE ANÚNCIO — troque este bloco pelo <ins class="adsbygoogle">...</ins> do AdSense. Veja o README. -->
+      Espaço reservado para anúncio (728×90 / responsivo)
+    </div>
+  </div>
+
+  <!-- ============================== RECURSOS ============================== -->
+  <section id="recursos">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">Por que usar</span>
+        <h2>Feito para o dia a dia de quem está na rua</h2>
+        <p>Um app simples, direto ao ponto, pensado para agilizar a rotina operacional.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <h3>Rapidez</h3>
+          <p>Gere um release completo e formatado em menos de 30 segundos, sem precisar redigitar tudo manualmente.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          </div>
+          <h3>Padronização</h3>
+          <p>Todos os releases seguem o mesmo formato, facilitando a leitura e o registro das ocorrências.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 1 1-4.4-7.4L21 3l-1 5.6"/></svg>
+          </div>
+          <h3>Copiar e colar</h3>
+          <p>Um toque copia o texto pronto para colar direto no grupo do WhatsApp da guarnição ou da central.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3>Uso offline</h3>
+          <p>Funciona mesmo sem internet* — o release é montado localmente no aparelho, só a cópia usa o WhatsApp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== COMO FUNCIONA ============================== -->
+  <section id="como-funciona" style="background:var(--surface);">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">Passo a passo</span>
+        <h2>Como funciona o Gerador de Release</h2>
+        <p>Quatro passos simples entre abrir o app e enviar o release no grupo.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Abra o aplicativo</h3>
+          <p>Toque no ícone do Gerador de Release na tela do seu celular, Android ou iPhone.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Preencha os campos</h3>
+          <p>Informe os dados da ocorrência: tipo, endereço, guarnição, horário e demais detalhes solicitados.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Gere o release</h3>
+          <p>Toque em "Gerar release" e o app monta automaticamente o texto formatado e padronizado.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <h3>Copie e cole no WhatsApp</h3>
+          <p>Use o botão de copiar, abra o WhatsApp e cole no grupo da guarnição ou da central. Pronto!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== ANÚNCIO (meio) ============================== -->
+  <div class="ad-slot ad-slot--section">
+    <div class="ad-inner">
+      <!-- ESPAÇO DE ANÚNCIO — troque este bloco pelo <ins class="adsbygoogle">...</ins> do AdSense. Veja o README. -->
+      Espaço reservado para anúncio (banner responsivo)
+    </div>
+  </div>
+
+  <!-- ============================== INSTALAÇÃO ============================== -->
+  <section id="instalacao">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">Instalação</span>
+        <h2>Como instalar no seu celular</h2>
+        <p>Escolha o seu sistema abaixo e siga o passo a passo.</p>
+      </div>
+
+      <div class="install-tabs">
+        <button class="tab-btn active" data-tab="android">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.43 11.43 0 0 0-8.94 0L5.65 5.67c-.19-.28-.55-.37-.84-.22-.3.16-.42.54-.26.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52M7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5m10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5"/></svg>
+          Android
+        </button>
+        <button class="tab-btn" data-tab="ios">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-3 2.45-4.44 2.56-4.51-1.4-2.04-3.58-2.32-4.36-2.35-1.85-.19-3.62 1.09-4.56 1.09-.94 0-2.39-1.06-3.93-1.03-2.02.03-3.88 1.18-4.92 2.99-2.1 3.64-.54 9.02 1.51 11.98 1 1.45 2.19 3.07 3.75 3.01 1.51-.06 2.08-.97 3.9-.97 1.82 0 2.34.97 3.93.94 1.62-.03 2.65-1.47 3.64-2.93 1.15-1.68 1.62-3.31 1.64-3.39-.04-.02-3.14-1.21-3.17-4.83M14.7 3.36c.83-1 1.39-2.39 1.24-3.78-1.19.05-2.64.8-3.5 1.79-.77.88-1.44 2.29-1.26 3.64 1.32.1 2.67-.67 3.52-1.65"/></svg>
+          iPhone
+        </button>
+      </div>
+
+      <!-- ---- Android ---- -->
+      <div class="tab-panel active" id="tab-android">
+        <div class="install-card">
+          <div>
+            <ol class="install-list">
+              <li><strong>Baixe o aplicativo</strong><span>Toque no botão "Baixar para Android" desta página. O arquivo (.apk) ou o link da Play Store será aberto.</span></li>
+              <li><strong>Permita instalação de fontes desconhecidas (se necessário)</strong><span>Se o app não vier da Play Store, seu celular pode pedir permissão em Configurações → Segurança → "Instalar apps desconhecidos". Ative apenas para o navegador/gerenciador de arquivos usado no download.</span></li>
+              <li><strong>Abra o arquivo baixado</strong><span>Toque no arquivo .apk na notificação ou na pasta de Downloads e selecione "Instalar".</span></li>
+              <li><strong>Aguarde a instalação</strong><span>Em poucos segundos o app estará instalado. Toque em "Abrir" para começar a usar.</span></li>
+              <li><strong>Conceda as permissões solicitadas</strong><span>Autorize o acesso à área de transferência/clipboard, usado para copiar o release gerado.</span></li>
+            </ol>
+
+            <div class="install-note">
+              <strong>Prefere pela Play Store?</strong>
+              Assim que o app for publicado na Google Play, a instalação é automática e sem passos extras — basta tocar em "Instalar".
+            </div>
+          </div>
+
+          <div class="install-side">
+            <div class="qr-box">QR Code de download (Android)</div>
+            <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:0;">Aponte a câmera do celular para o código e baixe direto.</p>
+            <a href="#download" class="btn btn-android btn-block">Baixar para Android</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- iOS ---- -->
+      <div class="tab-panel" id="tab-ios">
+        <div class="install-card">
+          <div>
+            <ol class="install-list">
+              <li><strong>Baixe o aplicativo</strong><span>Toque no botão "Baixar para iPhone" desta página, que leva à App Store (ou ao convite do TestFlight, durante a fase de testes).</span></li>
+              <li><strong>Instale pela App Store</strong><span>Toque em "Obter" e depois em "Instalar". Pode ser solicitada a senha do Apple ID ou o Face ID/Touch ID.</span></li>
+              <li><strong>Ou instale via TestFlight (fase beta)</strong><span>Se o app ainda estiver em testes, instale o app TestFlight, abra o link de convite recebido e toque em "Instalar".</span></li>
+              <li><strong>Abra o aplicativo</strong><span>Toque no ícone na tela inicial para começar a usar.</span></li>
+              <li><strong>Autorize o acesso à área de transferência</strong><span>Necessário para o recurso de copiar o release e colar no WhatsApp.</span></li>
+            </ol>
+
+            <div class="install-note">
+              <strong>Ainda em fase de testes?</strong>
+              Apps em teste no TestFlight ficam disponíveis por tempo limitado e exigem convite do desenvolvedor. Assim que sair a versão oficial na App Store, este aviso será removido.
+            </div>
+          </div>
+
+          <div class="install-side">
+            <div class="qr-box">QR Code de download (iPhone)</div>
+            <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:0;">Aponte a câmera do iPhone para o código e baixe direto.</p>
+            <a href="#download" class="btn btn-ios btn-block">Baixar para iPhone</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== DOWNLOAD FINAL ============================== -->
+  <section id="download">
+    <div class="container">
+      <div class="download-cta">
+        <h2>Pronto para agilizar seus releases?</h2>
+        <p>Baixe agora o Gerador de Release, gratuito para Android e iPhone.</p>
+        <div class="download-buttons">
+          <!-- TODO: troque os href="#" abaixo pelos links reais assim que o app for publicado -->
+          <a href="#" class="btn btn-android" id="androidDownload">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 9.48l1.84-3.18c.16-.31.04-.69-.26-.85-.29-.15-.65-.06-.83.22l-1.88 3.24a11.43 11.43 0 0 0-8.94 0L5.65 5.67c-.19-.28-.55-.37-.84-.22-.3.16-.42.54-.26.85L6.4 9.48C3.3 11.25 1.28 14.44 1 18h22c-.28-3.56-2.3-6.75-5.4-8.52M7 15.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5m10 0a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5"/></svg>
+            Baixar para Android
+          </a>
+          <a href="#" class="btn btn-ios" id="iosDownload">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-3 2.45-4.44 2.56-4.51-1.4-2.04-3.58-2.32-4.36-2.35-1.85-.19-3.62 1.09-4.56 1.09-.94 0-2.39-1.06-3.93-1.03-2.02.03-3.88 1.18-4.92 2.99-2.1 3.64-.54 9.02 1.51 11.98 1 1.45 2.19 3.07 3.75 3.01 1.51-.06 2.08-.97 3.9-.97 1.82 0 2.34.97 3.93.94 1.62-.03 2.65-1.47 3.64-2.93 1.15-1.68 1.62-3.31 1.64-3.39-.04-.02-3.14-1.21-3.17-4.83M14.7 3.36c.83-1 1.39-2.39 1.24-3.78-1.19.05-2.64.8-3.5 1.79-.77.88-1.44 2.29-1.26 3.64 1.32.1 2.67-.67 3.52-1.65"/></svg>
+            Baixar para iPhone
+          </a>
+        </div>
+        <p style="font-size:.8rem;margin-top:24px;color:rgba(255,255,255,.6);">* Os links acima ainda apontam para "#" — troque-os pelos links reais assim que o app estiver publicado. Veja como no README.md.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== ANÚNCIO (antes do FAQ) ============================== -->
+  <div class="ad-slot ad-slot--section">
+    <div class="ad-inner">
+      <!-- ESPAÇO DE ANÚNCIO — troque este bloco pelo <ins class="adsbygoogle">...</ins> do AdSense. Veja o README. -->
+      Espaço reservado para anúncio (banner responsivo)
+    </div>
+  </div>
+
+  <!-- ============================== FAQ ============================== -->
+  <section id="faq" style="background:var(--surface);">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">Dúvidas frequentes</span>
+        <h2>Perguntas frequentes</h2>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item open">
+          <button class="faq-q">O aplicativo é gratuito?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><p>Sim. O Gerador de Release é 100% gratuito para download e uso, tanto no Android quanto no iPhone.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Preciso de internet para gerar o release?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><p>Não. O texto é montado localmente no aparelho a partir dos campos preenchidos. Internet só é necessária para abrir o WhatsApp e enviar a mensagem.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Meus dados ficam salvos em algum servidor?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><p>Consulte a nossa <a href="privacidade.html">Política de Privacidade</a> para saber exatamente quais dados são tratados e como.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">O app funciona em qualquer modelo de celular?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><p>O app funciona em aparelhos Android e iPhone com versões de sistema recentes. Recomendamos manter seu sistema operacional atualizado.</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">Encontrei um problema ou tenho uma sugestão. Como entro em contato?
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+          <div class="faq-a"><p>Envie um e-mail para <a href="mailto:contato@seudominio.com.br">contato@seudominio.com.br</a> (troque pelo seu e-mail de contato).</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="brand" style="color:#fff;">
+          <span class="brand-mark">R</span>
+          Gerador de Release
+        </a>
+        <p>Aplicativo gratuito que gera releases de ocorrência prontos para copiar e colar no WhatsApp, agilizando a rotina operacional.</p>
+      </div>
+      <div>
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="#como-funciona">Como funciona</a></li>
+          <li><a href="#instalacao">Instalação</a></li>
+          <li><a href="#faq">Dúvidas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacidade.html">Política de Privacidade</a></li>
+          <li><a href="mailto:contato@seudominio.com.br">Fale conosco</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> Gerador de Release. Todos os direitos reservados.</span>
+      <span>Feito para agilizar a rotina de quem está na rua.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
