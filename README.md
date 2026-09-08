@@ -1,6 +1,6 @@
-# Site do Gerador de Release
+# Site do Gerador de release
 
-Site institucional para divulgar e disponibilizar o download do app **Gerador de Release** (Android e iPhone), com passo a passo de uso, instruções de instalação e espaços preparados para anúncios (monetização).
+Site institucional para divulgar e disponibilizar o download do app **Gerador de release** (Android e iPhone), com passo a passo de uso, instruções de instalação e espaços preparados para anúncios (monetização).
 
 Este guia foi escrito para quem **nunca publicou um site antes** — siga na ordem.
 

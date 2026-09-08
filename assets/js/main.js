@@ -1,5 +1,5 @@
 // ============================================================
-// Gerador de Release — interações do site (sem dependências externas)
+// Gerador de release — interações do site (sem dependências externas)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
