@@ -576,7 +576,7 @@
   .picker-item{
     width:100%;
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
     gap:10px;
     background: var(--panel);
@@ -601,6 +601,12 @@
     flex-shrink:0;
     width:16px; height:16px;
     color: var(--brass);
+    margin-top:2px;
+  }
+  .picker-item-label{
+    min-width:0;
+    white-space:normal;
+    line-height:1.4;
   }
   .picker-empty{
     text-align:center;
@@ -841,6 +847,7 @@
 <div class="section-label">Release</div>
 <label class="first">Título do delito / situação</label>
 <input type="text" id="titulo" placeholder="Ex.: PRISÃO EM FLAGRANTE POR TRÁFICO DE DROGAS">
+<button type="button" class="add-btn" id="tituloListBtn">🔎 escolher da lista de crimes (código penal)</button>
 
 <label>Narrativa da ocorrência</label>
 <textarea id="narrativa" placeholder="Descreva de forma impessoal e cronológica: horário, guarnição em ronda/atendimento, denúncia/atitude suspeita, abordagem, apreensão e condução à delegacia."></textarea>
@@ -1289,15 +1296,172 @@ el('unidade').addEventListener('change', updateUnitPreview);
 el('unidadeCustom').addEventListener('input', updateUnitPreview);
 restoreUnit();
 
-/* ---------- Seletor customizado (modal com busca) para CPR e Batalhão ---------- */
+/* ---------- Seletor customizado (modal com busca) para CPR, Batalhão e Título do delito ---------- */
 const PICKER_ICONS = {
   cpr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
-  unidade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6z"/></svg>'
+  unidade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6z"/></svg>',
+  titulo: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M12 6l-5 3 2.5 5.5a3 3 0 0 0 5 0L17 9l-5-3z"/><path d="M4.5 14.5h5M14.5 14.5h5"/></svg>'
 };
 const PICKER_META = {
   cpr: { eyebrow: 'Unidade', title: 'Comando de Policiamento Regional (CPR)' },
-  unidade: { eyebrow: 'Unidade', title: 'Batalhão / Companhia Independente' }
+  unidade: { eyebrow: 'Unidade', title: 'Batalhão / Companhia Independente' },
+  titulo: { eyebrow: 'Release', title: 'Título do delito / situação (Código Penal)' }
 };
+
+const TITULO_GROUPS = [
+  { label: null, items: [
+    { value: '__custom_titulo__', text: '✎ Digitar manualmente (não está na lista)' }
+  ]},
+  { label: 'Título I – Crimes contra a Pessoa', items: [
+    { value: 'Art. 121 — Homicídio', text: 'Art. 121 — Homicídio' },
+    { value: 'Art. 122 — Induzimento, instigação ou auxílio a suicídio ou a automutilação', text: 'Art. 122 — Induzimento, instigação ou auxílio a suicídio ou a automutilação' },
+    { value: 'Art. 123 — Infanticídio', text: 'Art. 123 — Infanticídio' },
+    { value: 'Art. 124 a 126 — Aborto', text: 'Art. 124 a 126 — Aborto' },
+    { value: 'Art. 129 — Lesão corporal', text: 'Art. 129 — Lesão corporal' },
+    { value: 'Art. 130 — Perigo de contágio venéreo', text: 'Art. 130 — Perigo de contágio venéreo' },
+    { value: 'Art. 131 — Perigo de contágio de moléstia grave', text: 'Art. 131 — Perigo de contágio de moléstia grave' },
+    { value: 'Art. 132 — Perigo para a vida ou saúde de outrem', text: 'Art. 132 — Perigo para a vida ou saúde de outrem' },
+    { value: 'Art. 133 — Abandono de incapaz', text: 'Art. 133 — Abandono de incapaz' },
+    { value: 'Art. 134 — Exposição ou abandono de recém-nascido', text: 'Art. 134 — Exposição ou abandono de recém-nascido' },
+    { value: 'Art. 135 — Omissão de socorro', text: 'Art. 135 — Omissão de socorro' },
+    { value: 'Art. 135-A — Condicionamento de atendimento médico-hospitalar emergencial', text: 'Art. 135-A — Condicionamento de atendimento médico-hospitalar emergencial' },
+    { value: 'Art. 136 — Maus-tratos', text: 'Art. 136 — Maus-tratos' },
+    { value: 'Art. 137 — Rixa', text: 'Art. 137 — Rixa' },
+    { value: 'Art. 138 — Calúnia', text: 'Art. 138 — Calúnia' },
+    { value: 'Art. 139 — Difamação', text: 'Art. 139 — Difamação' },
+    { value: 'Art. 140 — Injúria', text: 'Art. 140 — Injúria' },
+    { value: 'Art. 146 — Constrangimento ilegal', text: 'Art. 146 — Constrangimento ilegal' },
+    { value: 'Art. 147 — Ameaça', text: 'Art. 147 — Ameaça' },
+    { value: 'Art. 147-A — Perseguição (stalking)', text: 'Art. 147-A — Perseguição (stalking)' },
+    { value: 'Art. 147-B — Violência psicológica contra a mulher', text: 'Art. 147-B — Violência psicológica contra a mulher' },
+    { value: 'Art. 148 — Sequestro e cárcere privado', text: 'Art. 148 — Sequestro e cárcere privado' },
+    { value: 'Art. 149 — Redução a condição análoga à de escravo', text: 'Art. 149 — Redução a condição análoga à de escravo' },
+    { value: 'Art. 149-A — Tráfico de pessoas', text: 'Art. 149-A — Tráfico de pessoas' },
+    { value: 'Art. 150 — Violação de domicílio', text: 'Art. 150 — Violação de domicílio' },
+    { value: 'Art. 154-A — Invasão de dispositivo informático', text: 'Art. 154-A — Invasão de dispositivo informático' }
+  ]},
+  { label: 'Título II – Crimes contra o Patrimônio', items: [
+    { value: 'Art. 155 — Furto', text: 'Art. 155 — Furto' },
+    { value: 'Art. 157 — Roubo', text: 'Art. 157 — Roubo' },
+    { value: 'Art. 158 — Extorsão', text: 'Art. 158 — Extorsão' },
+    { value: 'Art. 159 — Extorsão mediante sequestro', text: 'Art. 159 — Extorsão mediante sequestro' },
+    { value: 'Art. 161 — Alteração de limites / Usurpação de águas / Esbulho possessório', text: 'Art. 161 — Alteração de limites / Usurpação de águas / Esbulho possessório' },
+    { value: 'Art. 163 — Dano', text: 'Art. 163 — Dano' },
+    { value: 'Art. 168 — Apropriação indébita', text: 'Art. 168 — Apropriação indébita' },
+    { value: 'Art. 168-A — Apropriação indébita previdenciária', text: 'Art. 168-A — Apropriação indébita previdenciária' },
+    { value: 'Art. 171 — Estelionato', text: 'Art. 171 — Estelionato' },
+    { value: 'Art. 171-A — Fraude com a utilização de ativos virtuais', text: 'Art. 171-A — Fraude com a utilização de ativos virtuais' },
+    { value: 'Art. 180 — Receptação', text: 'Art. 180 — Receptação' },
+    { value: 'Art. 180-A — Receptação de animal', text: 'Art. 180-A — Receptação de animal' }
+  ]},
+  { label: 'Título III – Crimes contra a Propriedade Imaterial', items: [
+    { value: 'Art. 184 — Violação de direito autoral', text: 'Art. 184 — Violação de direito autoral' }
+  ]},
+  { label: 'Título IV – Crimes contra a Organização do Trabalho', items: [
+    { value: 'Art. 197 — Atentado contra a liberdade de trabalho', text: 'Art. 197 — Atentado contra a liberdade de trabalho' },
+    { value: 'Art. 203 — Frustração de direito assegurado por lei trabalhista', text: 'Art. 203 — Frustração de direito assegurado por lei trabalhista' }
+  ]},
+  { label: 'Título V – Crimes contra o Sentimento Religioso e o Respeito aos Mortos', items: [
+    { value: 'Art. 208 — Ultraje a culto e impedimento ou perturbação de ato a ele relativo', text: 'Art. 208 — Ultraje a culto e impedimento ou perturbação de ato a ele relativo' },
+    { value: 'Art. 209 — Impedimento ou perturbação de cerimônia funerária', text: 'Art. 209 — Impedimento ou perturbação de cerimônia funerária' },
+    { value: 'Art. 210 — Violação de sepultura', text: 'Art. 210 — Violação de sepultura' },
+    { value: 'Art. 211 — Destruição, subtração ou ocultação de cadáver', text: 'Art. 211 — Destruição, subtração ou ocultação de cadáver' },
+    { value: 'Art. 212 — Vilipêndio a cadáver', text: 'Art. 212 — Vilipêndio a cadáver' }
+  ]},
+  { label: 'Título VI – Crimes contra a Dignidade Sexual', items: [
+    { value: 'Art. 213 — Estupro', text: 'Art. 213 — Estupro' },
+    { value: 'Art. 215 — Violação sexual mediante fraude', text: 'Art. 215 — Violação sexual mediante fraude' },
+    { value: 'Art. 215-A — Importunação sexual', text: 'Art. 215-A — Importunação sexual' },
+    { value: 'Art. 216-A — Assédio sexual', text: 'Art. 216-A — Assédio sexual' },
+    { value: 'Art. 216-B — Registro não autorizado da intimidade sexual', text: 'Art. 216-B — Registro não autorizado da intimidade sexual' },
+    { value: 'Art. 217-A — Estupro de vulnerável', text: 'Art. 217-A — Estupro de vulnerável' },
+    { value: 'Art. 218 — Induzimento de menor à prostituição ou a outra exploração sexual', text: 'Art. 218 — Induzimento de menor à prostituição ou a outra exploração sexual' },
+    { value: 'Art. 218-A — Satisfação de lascívia mediante presença de criança ou adolescente', text: 'Art. 218-A — Satisfação de lascívia mediante presença de criança ou adolescente' },
+    { value: 'Art. 218-B — Favorecimento da prostituição ou de outra forma de exploração sexual de criança ou vulnerável', text: 'Art. 218-B — Favorecimento da prostituição ou de outra forma de exploração sexual de criança ou vulnerável' },
+    { value: 'Art. 218-C — Divulgação de cena de estupro ou de pornografia sem consentimento', text: 'Art. 218-C — Divulgação de cena de estupro ou de pornografia sem consentimento' },
+    { value: 'Art. 228 — Favorecimento da prostituição ou outra forma de exploração sexual', text: 'Art. 228 — Favorecimento da prostituição ou outra forma de exploração sexual' },
+    { value: 'Art. 230 — Rufianismo', text: 'Art. 230 — Rufianismo' },
+    { value: 'Art. 231 — Tráfico internacional de pessoa para fim de exploração sexual', text: 'Art. 231 — Tráfico internacional de pessoa para fim de exploração sexual' },
+    { value: 'Art. 231-A — Tráfico interno de pessoa para fim de exploração sexual', text: 'Art. 231-A — Tráfico interno de pessoa para fim de exploração sexual' }
+  ]},
+  { label: 'Título VII – Crimes contra a Família', items: [
+    { value: 'Art. 235 — Bigamia', text: 'Art. 235 — Bigamia' },
+    { value: 'Art. 244 — Abandono material', text: 'Art. 244 — Abandono material' },
+    { value: 'Art. 245 — Entrega de filho menor a pessoa inidônea', text: 'Art. 245 — Entrega de filho menor a pessoa inidônea' },
+    { value: 'Art. 246 — Abandono intelectual', text: 'Art. 246 — Abandono intelectual' },
+    { value: 'Art. 247 — Abandono moral', text: 'Art. 247 — Abandono moral' },
+    { value: 'Art. 249 — Subtração de incapazes', text: 'Art. 249 — Subtração de incapazes' }
+  ]},
+  { label: 'Título VIII – Crimes contra a Incolumidade Pública', items: [
+    { value: 'Art. 250 — Incêndio', text: 'Art. 250 — Incêndio' },
+    { value: 'Art. 251 — Explosão', text: 'Art. 251 — Explosão' },
+    { value: 'Art. 254 — Inundação', text: 'Art. 254 — Inundação' },
+    { value: 'Art. 256 — Desabamento ou desmoronamento', text: 'Art. 256 — Desabamento ou desmoronamento' },
+    { value: 'Art. 267 — Epidemia', text: 'Art. 267 — Epidemia' },
+    { value: 'Art. 268 — Infração de medida sanitária preventiva', text: 'Art. 268 — Infração de medida sanitária preventiva' },
+    { value: 'Art. 272 — Falsificação, corrupção, adulteração ou alteração de substância ou produtos alimentícios', text: 'Art. 272 — Falsificação, corrupção, adulteração ou alteração de substância ou produtos alimentícios' },
+    { value: 'Art. 273 — Falsificação, corrupção, adulteração ou alteração de produto destinado a fins terapêuticos ou medicinais', text: 'Art. 273 — Falsificação, corrupção, adulteração ou alteração de produto destinado a fins terapêuticos ou medicinais' }
+  ]},
+  { label: 'Título IX – Crimes contra a Paz Pública', items: [
+    { value: 'Art. 286 — Incitação ao crime', text: 'Art. 286 — Incitação ao crime' },
+    { value: 'Art. 287 — Apologia de crime ou criminoso', text: 'Art. 287 — Apologia de crime ou criminoso' },
+    { value: 'Art. 288 — Associação criminosa', text: 'Art. 288 — Associação criminosa' },
+    { value: 'Art. 288-A — Constituição de milícia privada', text: 'Art. 288-A — Constituição de milícia privada' }
+  ]},
+  { label: 'Título X – Crimes contra a Fé Pública', items: [
+    { value: 'Art. 289 — Moeda falsa', text: 'Art. 289 — Moeda falsa' },
+    { value: 'Art. 293 — Falsificação de papéis públicos', text: 'Art. 293 — Falsificação de papéis públicos' },
+    { value: 'Art. 296 — Falsificação do selo ou sinal público', text: 'Art. 296 — Falsificação do selo ou sinal público' },
+    { value: 'Art. 297 — Falsificação de documento público', text: 'Art. 297 — Falsificação de documento público' },
+    { value: 'Art. 298 — Falsificação de documento particular', text: 'Art. 298 — Falsificação de documento particular' },
+    { value: 'Art. 299 — Falsidade ideológica', text: 'Art. 299 — Falsidade ideológica' },
+    { value: 'Art. 304 — Uso de documento falso', text: 'Art. 304 — Uso de documento falso' },
+    { value: 'Art. 307 — Falsa identidade', text: 'Art. 307 — Falsa identidade' },
+    { value: 'Art. 308 — Uso de documento de identidade alheia', text: 'Art. 308 — Uso de documento de identidade alheia' },
+    { value: 'Art. 311 — Adulteração de sinal identificador de veículo automotor', text: 'Art. 311 — Adulteração de sinal identificador de veículo automotor' },
+    { value: 'Art. 311-A — Fraudes em certames de interesse público', text: 'Art. 311-A — Fraudes em certames de interesse público' }
+  ]},
+  { label: 'Título XI – Crimes contra a Administração Pública', items: [
+    { value: 'Art. 312 — Peculato', text: 'Art. 312 — Peculato' },
+    { value: 'Art. 313 — Peculato mediante erro de outrem', text: 'Art. 313 — Peculato mediante erro de outrem' },
+    { value: 'Art. 313-A — Inserção de dados falsos em sistema de informações', text: 'Art. 313-A — Inserção de dados falsos em sistema de informações' },
+    { value: 'Art. 313-B — Modificação ou alteração não autorizada de sistema de informações', text: 'Art. 313-B — Modificação ou alteração não autorizada de sistema de informações' },
+    { value: 'Art. 316 — Concussão', text: 'Art. 316 — Concussão' },
+    { value: 'Art. 317 — Corrupção passiva', text: 'Art. 317 — Corrupção passiva' },
+    { value: 'Art. 319 — Prevaricação', text: 'Art. 319 — Prevaricação' },
+    { value: 'Art. 319-A — Prevaricação imprópria (omissão do dever de vedar celular em presídio)', text: 'Art. 319-A — Prevaricação imprópria (omissão do dever de vedar celular em presídio)' },
+    { value: 'Art. 320 — Condescendência criminosa', text: 'Art. 320 — Condescendência criminosa' },
+    { value: 'Art. 321 — Advocacia administrativa', text: 'Art. 321 — Advocacia administrativa' },
+    { value: 'Art. 328 — Usurpação de função pública', text: 'Art. 328 — Usurpação de função pública' },
+    { value: 'Art. 329 — Resistência', text: 'Art. 329 — Resistência' },
+    { value: 'Art. 330 — Desobediência', text: 'Art. 330 — Desobediência' },
+    { value: 'Art. 331 — Desacato', text: 'Art. 331 — Desacato' },
+    { value: 'Art. 333 — Corrupção ativa', text: 'Art. 333 — Corrupção ativa' },
+    { value: 'Art. 334 — Descaminho', text: 'Art. 334 — Descaminho' },
+    { value: 'Art. 334-A — Contrabando', text: 'Art. 334-A — Contrabando' },
+    { value: 'Art. 337-B — Corrupção ativa em transação comercial internacional', text: 'Art. 337-B — Corrupção ativa em transação comercial internacional' },
+    { value: 'Art. 337-E a 337-P — Crimes em licitações e contratos administrativos', text: 'Art. 337-E a 337-P — Crimes em licitações e contratos administrativos' },
+    { value: 'Art. 339 — Denunciação caluniosa', text: 'Art. 339 — Denunciação caluniosa' },
+    { value: 'Art. 340 — Comunicação falsa de crime ou de contravenção', text: 'Art. 340 — Comunicação falsa de crime ou de contravenção' },
+    { value: 'Art. 341 — Autoacusação falsa', text: 'Art. 341 — Autoacusação falsa' },
+    { value: 'Art. 342 — Falso testemunho ou falsa perícia', text: 'Art. 342 — Falso testemunho ou falsa perícia' },
+    { value: 'Art. 344 — Coação no curso do processo', text: 'Art. 344 — Coação no curso do processo' },
+    { value: 'Art. 345 — Exercício arbitrário das próprias razões', text: 'Art. 345 — Exercício arbitrário das próprias razões' },
+    { value: 'Art. 347 — Fraude processual', text: 'Art. 347 — Fraude processual' },
+    { value: 'Art. 348 — Favorecimento pessoal', text: 'Art. 348 — Favorecimento pessoal' },
+    { value: 'Art. 349 — Favorecimento real', text: 'Art. 349 — Favorecimento real' },
+    { value: 'Art. 349-A — Entrada ilegal de aparelho telefônico em estabelecimento prisional', text: 'Art. 349-A — Entrada ilegal de aparelho telefônico em estabelecimento prisional' },
+    { value: 'Art. 355 — Patrocínio infiel e patrocínio simultâneo ou tergiversação', text: 'Art. 355 — Patrocínio infiel e patrocínio simultâneo ou tergiversação' },
+    { value: 'Art. 359 — Desobediência a decisão judicial sobre perda ou suspensão de direito', text: 'Art. 359 — Desobediência a decisão judicial sobre perda ou suspensão de direito' }
+  ]},
+  { label: 'Título XII – Crimes contra o Estado Democrático de Direito', items: [
+    { value: 'Art. 359-L — Abolição violenta do Estado Democrático de Direito', text: 'Art. 359-L — Abolição violenta do Estado Democrático de Direito' },
+    { value: 'Art. 359-M — Golpe de Estado', text: 'Art. 359-M — Golpe de Estado' },
+    { value: 'Art. 359-N — Interrupção do processo eleitoral', text: 'Art. 359-N — Interrupção do processo eleitoral' },
+    { value: 'Art. 359-P — Violência política', text: 'Art. 359-P — Violência política' },
+    { value: 'Art. 359-R — Sabotagem', text: 'Art. 359-R — Sabotagem' }
+  ]}
+];
 
 function normalizeSearch(str){
   return (str || '').toString().normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -1340,12 +1504,26 @@ function buildPickerGroups(selectEl){
 
 let activePickerId = null;
 
+function getPickerGroups(id){
+  if(id === 'titulo') return TITULO_GROUPS;
+  return buildPickerGroups(el(id));
+}
+
+function getPickerCurrentValue(id){
+  if(id === 'titulo') return el('titulo').value.trim();
+  return el(id).value;
+}
+
+function pickerValuesMatch(id, itemValue, currentValue){
+  if(id === 'titulo') return !!currentValue && normalizeSearch(itemValue) === normalizeSearch(currentValue);
+  return itemValue === currentValue;
+}
+
 function renderPickerList(filterText){
-  const selectEl = el(activePickerId);
   const listEl = el('pickerList');
-  const groups = buildPickerGroups(selectEl);
+  const groups = getPickerGroups(activePickerId);
   const query = normalizeSearch(filterText);
-  const currentValue = selectEl.value;
+  const currentValue = getPickerCurrentValue(activePickerId);
 
   listEl.innerHTML = '';
   let anyMatch = false;
@@ -1361,15 +1539,16 @@ function renderPickerList(filterText){
       listEl.appendChild(groupLabel);
     }
     items.forEach((item) => {
+      const isSelected = pickerValuesMatch(activePickerId, item.value, currentValue);
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'picker-item' + (item.value === currentValue ? ' selected' : '');
+      btn.className = 'picker-item' + (isSelected ? ' selected' : '');
       btn.dataset.value = item.value;
       const span = document.createElement('span');
-      span.className = 'field-trigger-label';
+      span.className = 'picker-item-label';
       span.textContent = item.text;
       btn.appendChild(span);
-      if(item.value === currentValue){
+      if(isSelected){
         btn.insertAdjacentHTML('beforeend', '<svg class="picker-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>');
       }
       btn.addEventListener('click', () => selectPickerValue(item.value));
@@ -1383,6 +1562,19 @@ function renderPickerList(filterText){
 }
 
 function selectPickerValue(value){
+  if(activePickerId === 'titulo'){
+    const tituloInput = el('titulo');
+    if(value === '__custom_titulo__'){
+      tituloInput.value = '';
+      closePicker();
+      setTimeout(() => tituloInput.focus(), 100);
+      return;
+    }
+    tituloInput.value = value;
+    tituloInput.dispatchEvent(new Event('input'));
+    closePicker();
+    return;
+  }
   const selectEl = el(activePickerId);
   selectEl.value = value;
   selectEl.dispatchEvent(new Event('change'));
@@ -1410,6 +1602,7 @@ function closePicker(){
 
 el('cprTrigger').addEventListener('click', () => openPicker('cpr'));
 el('unidadeTrigger').addEventListener('click', () => openPicker('unidade'));
+el('tituloListBtn').addEventListener('click', () => openPicker('titulo'));
 el('pickerClose').addEventListener('click', closePicker);
 el('pickerOverlay').addEventListener('click', (e) => {
   if(e.target === el('pickerOverlay')) closePicker();
