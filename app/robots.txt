@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://davidfsantos10.github.io/app/sitemap.xml

@@ -1,0 +1,31 @@
+{
+  "name": "Gerador de Release — 19° BPM",
+  "short_name": "Release 19BPM",
+  "description": "App para preenchimento automático de releases operacionais no modelo padrão do 19° BPM/PMBA.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14181a",
+  "theme_color": "#14181a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Release — 19° BPM</title>
+<meta name="description" content="Ferramenta para preenchimento automático de releases operacionais da PMBA, no modelo padrão de comunicação, com histórico de releases salvos.">
+<meta property="og:title" content="Gerador de Release — PMBA">
+<meta property="og:description" content="Preenchimento automático de releases operacionais no modelo padrão da PMBA.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14181a">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Release 19BPM">
+<style>
+  :root{
+    --bg: #14181a;
+    --panel: #1c2225;
+    --panel-raised: #232a2d;
+    --line: #33393c;
+    --khaki: #a89968;
+    --khaki-dim: #6f6650;
+    --brass: #c9b26b;
+    --ink: #e8e6df;
+    --ink-dim: #9aa09f;
+    --danger: #b3453f;
+    --ok: #6f8f5a;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+    --sans: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    padding: 18px 14px 60px;
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(168,153,104,0.06), transparent 45%);
+  }
+
+  .masthead{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding-bottom:14px;
+    margin-bottom:18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .badge{
+    width:38px; height:38px;
+    flex-shrink:0;
+    border-radius:50%;
+    border:1.5px solid var(--brass);
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono);
+    font-weight:700;
+    font-size:13px;
+    color: var(--brass);
+    letter-spacing:-0.5px;
+  }
+  .masthead-text .eyebrow{
+    font-family: var(--mono);
+    font-size:10.5px;
+    letter-spacing: 0.14em;
+    color: var(--khaki);
+    text-transform: uppercase;
+  }
+  .masthead-text h1{
+    margin:2px 0 0;
+    font-size:16.5px;
+    font-weight:700;
+    letter-spacing:0.01em;
+    color: var(--ink);
+  }
+
+  .section-label{
+    font-family: var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color: var(--khaki);
+    margin: 22px 0 8px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .section-label::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background: var(--line);
+  }
+  .section-label.first{ margin-top:4px; }
+
+  label{
+    display:block;
+    font-size:11.5px;
+    color: var(--ink-dim);
+    margin-bottom:5px;
+    margin-top:12px;
+  }
+  label.first{ margin-top:0; }
+
+  input[type=text], input[type=date], input[type=number], textarea{
+    width:100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    padding: 10px 11px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input:focus, textarea:focus{ border-color: var(--khaki); }
+  textarea{ resize: vertical; min-height: 96px; line-height:1.5; }
+  input::placeholder, textarea::placeholder{ color: #565d5f; }
+
+  .row2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+
+  .chip-list{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
+  .chip{
+    display:grid;
+    grid-template-columns: 1fr 72px auto;
+    gap:8px;
+    background: var(--panel);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:8px;
+  }
+  .chip.single{ grid-template-columns: 1fr auto; }
+  .chip input{ border:1px solid var(--line); background: var(--panel-raised); font-size:13.5px; padding:8px 9px; }
+  .chip-remove{
+    background:none; border:1px solid var(--line); color: var(--ink-dim);
+    border-radius:3px; width:34px; cursor:pointer; font-size:16px; line-height:1;
+  }
+  .chip-remove:hover{ border-color: var(--danger); color: var(--danger); }
+
+  .add-btn{
+    margin-top:8px;
+    background:none;
+    border:1px dashed var(--khaki-dim);
+    color: var(--khaki);
+    font-family: var(--mono);
+    font-size:11.5px;
+    letter-spacing:0.06em;
+    border-radius:3px;
+    padding:8px 12px;
+    cursor:pointer;
+    width:100%;
+    text-transform:uppercase;
+  }
+  .add-btn:hover{ border-color: var(--khaki); background: rgba(168,153,104,0.06); }
+
+  .btn-row{
+    display:grid;
+    grid-template-columns: 1fr 92px;
+    gap:10px;
+    margin-top:26px;
+  }
+  .generate-btn{
+    width:100%;
+    background: var(--khaki);
+    color: #14181a;
+    border:none;
+    border-radius:3px;
+    padding:14px;
+    font-family: var(--mono);
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .generate-btn:active{ transform: translateY(1px); }
+
+  .clear-btn{
+    width:100%;
+    background:none;
+    color: var(--ink-dim);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:14px 4px;
+    font-family: var(--mono);
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .clear-btn:hover{ border-color: var(--danger); color: var(--danger); }
+  .clear-btn:active{ transform: translateY(1px); }
+
+  .output-wrap{
+    margin-top: 26px;
+    display:none;
+  }
+  .output-wrap.show{ display:block; }
+
+  .output-card{
+    background: var(--panel);
+    border: 1px solid var(--khaki-dim);
+    border-radius: 4px;
+    padding: 16px 14px;
+    position: relative;
+  }
+  .quick-copy-btn{
+    position:absolute;
+    top:10px; right:10px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background: var(--khaki);
+    color: #14181a;
+    border:none;
+    border-radius:3px;
+    padding:6px 10px;
+    font-family: var(--mono);
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .quick-copy-btn svg{ width:12px; height:12px; flex-shrink:0; }
+  .quick-copy-btn.copied{
+    background: var(--ok);
+    color:#fff;
+  }
+  .stamp{
+    position:absolute;
+    top:12px; right:12px;
+    font-family: var(--mono);
+    font-size:9.5px;
+    letter-spacing:0.1em;
+    color: var(--ok);
+    border:1px solid var(--ok);
+    border-radius:2px;
+    padding:2px 6px;
+    text-transform:uppercase;
+    opacity:0.85;
+  }
+  #outputText{
+    white-space: pre-wrap;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin:0;
+    padding-top: 34px;
+  }
+  #outputText b{ color:#fff; }
+
+  .copy-btn{
+    margin-top:12px;
+    width:100%;
+    background: var(--panel-raised);
+    border: 1px solid var(--khaki);
+    color: var(--khaki);
+    border-radius:3px;
+    padding:12px;
+    font-family: var(--mono);
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .copy-btn.copied{
+    border-color: var(--ok);
+    color: var(--ok);
+  }
+
+  .hint{
+    font-size:11px;
+    color:#5c6264;
+    margin-top:6px;
+    line-height:1.4;
+  }
+
+  .notepad{
+    margin-top: 30px;
+  }
+  .notepad-empty{
+    font-size:12.5px;
+    color: var(--ink-dim);
+    border:1px dashed var(--line);
+    border-radius:4px;
+    padding:16px;
+    text-align:center;
+    line-height:1.5;
+  }
+  .note-item{
+    background: var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+  .note-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:11px 12px;
+    cursor:pointer;
+  }
+  .note-head-text{
+    min-width:0;
+  }
+  .note-title{
+    font-size:13px;
+    color: var(--ink);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .note-meta{
+    font-family: var(--mono);
+    font-size:10px;
+    color: var(--khaki);
+    letter-spacing:0.05em;
+    margin-top:2px;
+  }
+  .note-chevron{
+    font-family: var(--mono);
+    color: var(--ink-dim);
+    font-size:12px;
+    flex-shrink:0;
+    transition: transform .15s;
+  }
+  .note-item.open .note-chevron{ transform: rotate(90deg); }
+  .note-body{
+    display:none;
+    padding: 0 12px 12px;
+  }
+  .note-item.open .note-body{ display:block; }
+  .note-body pre{
+    white-space: pre-wrap;
+    font-family: var(--sans);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink);
+    background: var(--panel-raised);
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:10px;
+    margin: 0 0 8px;
+  }
+  .note-actions{
+    display:grid;
+    grid-template-columns: 1fr 40px;
+    gap:8px;
+  }
+  .note-copy{
+    background:none;
+    border:1px solid var(--khaki);
+    color: var(--khaki);
+    border-radius:3px;
+    padding:8px;
+    font-family: var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .note-copy.copied{ border-color: var(--ok); color: var(--ok); }
+  .note-delete{
+    background:none;
+    border:1px solid var(--line);
+    color: var(--ink-dim);
+    border-radius:3px;
+    cursor:pointer;
+    font-size:15px;
+  }
+  .note-delete:hover{ border-color: var(--danger); color: var(--danger); }
+
+  .clear-history-btn{
+    width:100%;
+    margin-top:4px;
+    background:none;
+    border:none;
+    color:#5c6264;
+    font-family: var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    text-decoration:underline;
+    cursor:pointer;
+    padding:8px;
+  }
+  .clear-history-btn:hover{ color: var(--danger); }
+  .clear-history-btn.armed{
+    color: var(--danger);
+    font-weight:700;
+  }
+
+  select{
+    width:100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    padding: 10px 11px;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' fill='none' stroke='%23a89968' stroke-width='1.5'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 11px center;
+    padding-right: 32px;
+  }
+  select:focus{ border-color: var(--khaki); }
+  select option{ background: var(--panel); color: var(--ink); }
+  select optgroup{
+    background: var(--bg);
+    color: var(--khaki);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="badge">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+      <path d="M12 2l2.47 6.36 6.53.42-5.1 4.24 1.7 6.4L12 15.9l-5.6 3.52 1.7-6.4-5.1-4.24 6.53-.42z"/>
+    </svg>
+  </div>
+  <div class="masthead-text">
+    <h1>Gerador de Release</h1>
+  </div>
+</div>
+
+<div class="section-label first">Unidade</div>
+<label class="first">Comando de Policiamento Regional (CPR)</label>
+<select id="cpr">
+  <option value="CPRC-A">CPRC-A (Atlântico) — Salvador</option>
+  <option value="CPRC-C">CPRC-C (Central) — Salvador</option>
+  <option value="CPRC-BTS">CPRC-BTS (Baía de Todos os Santos) — Salvador</option>
+  <option value="CPRMS">CPRMS (Região Metropolitana) — Lauro de Freitas</option>
+  <option value="CPR-MRC" selected>CPR-MRC (Médio Rio de Contas) — Jequié</option>
+  <option value="CPR-L">CPR-L (Leste) — Feira de Santana</option>
+  <option value="CPR-S">CPR-S (Sul) — Ilhéus</option>
+  <option value="CPR-N">CPR-N (Norte) — Juazeiro</option>
+  <option value="CPR-O">CPR-O (Oeste) — Barreiras</option>
+  <option value="CPR-SO">CPR-SO (Sudoeste) — Vitória da Conquista</option>
+  <option value="CPR-Ch">CPR-Ch (Chapada) — Itaberaba</option>
+  <option value="CPR-ES">CPR-ES (Extremo Sul) — Teixeira de Freitas</option>
+  <option value="CPR-R">CPR-R (Recôncavo) — Santo Antônio de Jesus</option>
+  <option value="CPR-CN">CPR-CN (Centro-Norte) — Irecê</option>
+  <option value="CPR-LN">CPR-LN (Litoral Norte) — Alagoinhas</option>
+</select>
+
+<label>Batalhão / Companhia Independente</label>
+<select id="unidade">
+  <optgroup label="Batalhões de Polícia Militar (BPM)">
+    <option value="4°BPM">4º BPM — Alagoinhas</option>
+    <option value="5°BPM">5º BPM — Euclides da Cunha</option>
+    <option value="6°BPM">6º BPM — Senhor do Bonfim</option>
+    <option value="7°BPM">7º BPM — Irecê</option>
+    <option value="8°BPM">8º BPM — Porto Seguro</option>
+    <option value="11°BPM">11º BPM — Itaberaba</option>
+    <option value="12°BPM">12º BPM — Camaçari</option>
+    <option value="14°BPM">14º BPM — Santo Antônio de Jesus</option>
+    <option value="15°BPM">15º BPM — Itabuna</option>
+    <option value="16°BPM">16º BPM — Serrinha</option>
+    <option value="17°BPM">17º BPM — Guanambi</option>
+    <option value="18°BPM">18º BPM — Centro Histórico de Salvador</option>
+    <option value="19°BPM" selected>19º BPM — Jequié</option>
+    <option value="20°BPM">20º BPM — Paulo Afonso</option>
+    <option value="22°BPM">22º BPM — Cajazeiras (Salvador)</option>
+    <option value="23°BPM">23º BPM — Vera Cruz</option>
+    <option value="24°BPM">24º BPM — Brumado</option>
+    <option value="25°BPM">25º BPM — Conceição do Jacuípe</option>
+    <option value="26°BPM">26º BPM — Candeias</option>
+    <option value="29°BPM">29º BPM — Jacobina</option>
+    <option value="30°BPM">30º BPM — Nordeste de Amaralina (Salvador)</option>
+    <option value="31°BPM">31º BPM — Valença</option>
+    <option value="32°BPM">32º BPM — Itapuã (Salvador)</option>
+  </optgroup>
+  <optgroup label="Batalhões de Ensino, Instrução e Capacitação (BEIC)">
+    <option value="1°BEIC">1º BEIC — Feira de Santana</option>
+    <option value="2°BEIC">2º BEIC — Ilhéus</option>
+    <option value="3°BEIC">3º BEIC — Juazeiro</option>
+    <option value="9°BEIC">9º BEIC — Vitória da Conquista</option>
+    <option value="10°BEIC">10º BEIC — Barreiras</option>
+    <option value="13°BEIC">13º BEIC — Teixeira de Freitas</option>
+  </optgroup>
+  <optgroup label="Batalhões Especializados e de Emprego Tático">
+    <option value="BOPE">BOPE — Operações Policiais Especiais (Lauro de Freitas)</option>
+    <option value="BPChq">BPChq — Polícia de Choque (Lauro de Freitas)</option>
+    <option value="BEPE">BEPE — Policiamento em Eventos (Salvador)</option>
+    <option value="BEPTur">BEPTur — Policiamento Turístico</option>
+    <option value="BPGD">BPGD — Policiamento de Guardas</option>
+    <option value="BPRv">BPRv — Polícia Rodoviária (Valéria, Salvador)</option>
+    <option value="BApOp">BApOp — Apoio Operacional (Salvador)</option>
+  </optgroup>
+  <optgroup label="CIPM — Salvador e Região Metropolitana">
+    <option value="1ªCIPM">1ª CIPM — Pernambués</option>
+    <option value="2ªCIPM">2ª CIPM — Barbalho</option>
+    <option value="9ªCIPM">9ª CIPM — Pirajá</option>
+    <option value="10ªCIPM">10ª CIPM — Candeias</option>
+    <option value="11ªCIPM">11ª CIPM — Barra / Graça</option>
+    <option value="12ªCIPM">12ª CIPM — Ondina / Rio Vermelho</option>
+    <option value="13ªCIPM">13ª CIPM — Pituba</option>
+    <option value="14ªCIPM">14ª CIPM — Lobato</option>
+    <option value="15ªCIPM">15ª CIPM — Itapuã</option>
+    <option value="16ªCIPM">16ª CIPM — Comércio</option>
+    <option value="17ªCIPM">17ª CIPM — Uruguai</option>
+    <option value="18ªCIPM">18ª CIPM — Periperi</option>
+    <option value="19ªCIPM">19ª CIPM — Paripe</option>
+    <option value="22ªCIPM">22ª CIPM — Simões Filho</option>
+    <option value="26ªCIPM">26ª CIPM — Brotas</option>
+    <option value="31ªCIPM">31ª CIPM — Valéria</option>
+    <option value="35ªCIPM">35ª CIPM — Iguatemi</option>
+    <option value="36ªCIPM">36ª CIPM — Dias d'Ávila</option>
+    <option value="37ªCIPM">37ª CIPM — Liberdade</option>
+    <option value="39ªCIPM">39ª CIPM — Boca do Rio / Imbuí</option>
+    <option value="41ªCIPM">41ª CIPM — Garcia / Federação</option>
+    <option value="47ªCIPM">47ª CIPM — Pau da Lima</option>
+    <option value="48ªCIPM">48ª CIPM — Sussuarana</option>
+    <option value="49ªCIPM">49ª CIPM — São Cristóvão</option>
+    <option value="50ªCIPM">50ª CIPM — Sete de Abril</option>
+    <option value="52ªCIPM">52ª CIPM — Lauro de Freitas</option>
+    <option value="53ªCIPM">53ª CIPM — Mata de São João / Praia do Forte</option>
+    <option value="58ªCIPM">58ª CIPM — Cosme de Farias</option>
+    <option value="59ªCIPM">59ª CIPM — Vila de Abrantes / Arembepe</option>
+    <option value="81ªCIPM">81ª CIPM — Itinga</option>
+    <option value="82ªCIPM">82ª CIPM — CAB / Paralela</option>
+  </optgroup>
+  <optgroup label="CIPM — Interior do Estado">
+    <option value="4ªCIPM">4ª CIPM — Macaúbas</option>
+    <option value="6ªCIPM">6ª CIPM — Rio Real</option>
+    <option value="7ªCIPM">7ª CIPM — Eunápolis</option>
+    <option value="8ªCIPM">8ª CIPM — Itapetinga</option>
+    <option value="10ªCIPM">10ª CIPM — Xique-Xique</option>
+    <option value="20ªCIPM">20ª CIPM — Santo Amaro</option>
+    <option value="21ªCIPM">21ª CIPM — Cipó</option>
+    <option value="24ªCIPM">24ª CIPM — Jacobina</option>
+    <option value="25ªCIPM">25ª CIPM — Casa Nova</option>
+    <option value="27ªCIPM">27ª CIPM — Cruz das Almas</option>
+    <option value="28ªCIPM">28ª CIPM — Ibotirama</option>
+    <option value="29ªCIPM">29ª CIPM — Seabra</option>
+    <option value="30ªCIPM">30ª CIPM — Santa Maria da Vitória</option>
+    <option value="32ªCIPM">32ª CIPM — Pojuca</option>
+    <option value="33ªCIPM">33ª CIPM — Valença</option>
+    <option value="34ªCIPM">34ª CIPM — Brumado</option>
+    <option value="38ªCIPM">38ª CIPM — Bom Jesus da Lapa</option>
+    <option value="42ªCIPM">42ª CIPM — Lençóis</option>
+    <option value="43ªCIPM">43ª CIPM — Itamaraju</option>
+    <option value="44ªCIPM">44ª CIPM — Medeiros Neto</option>
+    <option value="45ªCIPM">45ª CIPM — Curaçá</option>
+    <option value="46ªCIPM">46ª CIPM — Livramento de Nossa Senhora</option>
+    <option value="51ªCIPM">51ª CIPM — Conde</option>
+    <option value="54ªCIPM">54ª CIPM — Campo Formoso</option>
+    <option value="55ªCIPM">55ª CIPM — Ipiaú</option>
+    <option value="56ªCIPM">56ª CIPM — Entre Rios</option>
+    <option value="57ªCIPM">57ª CIPM — Santo Estêvão</option>
+    <option value="60ªCIPM">60ª CIPM — Gandu</option>
+    <option value="61ªCIPM">61ª CIPM — Ubaitaba</option>
+    <option value="62ªCIPM">62ª CIPM — Camacan</option>
+    <option value="63ªCIPM">63ª CIPM — Ibicaraí</option>
+    <option value="64ªCIPM">64ª CIPM — Feira de Santana</option>
+    <option value="65ªCIPM">65ª CIPM — Feira de Santana</option>
+    <option value="66ªCIPM">66ª CIPM — Feira de Santana</option>
+    <option value="67ªCIPM">67ª CIPM — Feira de Santana</option>
+    <option value="68ªCIPM">68ª CIPM — Ilhéus (Centro)</option>
+    <option value="69ªCIPM">69ª CIPM — Ilhéus (Zona Sul)</option>
+    <option value="70ªCIPM">70ª CIPM — Ilhéus (Zona Norte)</option>
+    <option value="71ªCIPM">71ª CIPM — Canavieiras</option>
+    <option value="72ªCIPM">72ª CIPM — Itacaré</option>
+    <option value="73ªCIPM">73ª CIPM — Juazeiro</option>
+    <option value="74ªCIPM">74ª CIPM — Juazeiro</option>
+    <option value="75ªCIPM">75ª CIPM — Juazeiro</option>
+    <option value="76ªCIPM">76ª CIPM — Juazeiro</option>
+    <option value="77ªCIPM">77ª CIPM — Vitória da Conquista (Leste)</option>
+    <option value="78ªCIPM">78ª CIPM — Vitória da Conquista (Oeste)</option>
+    <option value="79ªCIPM">79ª CIPM — Poções</option>
+    <option value="80ªCIPM">80ª CIPM — Cândido Sales</option>
+    <option value="83ªCIPM">83ª CIPM — Barreiras</option>
+    <option value="84ªCIPM">84ª CIPM — Barreiras</option>
+    <option value="85ªCIPM">85ª CIPM — Luís Eduardo Magalhães</option>
+    <option value="86ªCIPM">86ª CIPM — Formosa do Rio Preto</option>
+    <option value="87ªCIPM">87ª CIPM — Teixeira de Freitas</option>
+    <option value="88ªCIPM">88ª CIPM — Alcobaça / Caravelas / Prado</option>
+    <option value="89ªCIPM">89ª CIPM — Mucuri / Nova Viçosa</option>
+    <option value="90ªCIPM">90ª CIPM — Riachão do Jacuípe</option>
+    <option value="91ªCIPM">91ª CIPM — Capim Grosso</option>
+    <option value="92ªCIPM">92ª CIPM — Vitória da Conquista (Ronda Rural)</option>
+    <option value="93ªCIPM">93ª CIPM — Maracás</option>
+    <option value="94ªCIPM">94ª CIPM — Caetité</option>
+    <option value="95ªCIPM">95ª CIPM — Catu</option>
+    <option value="97ªCIPM">97ª CIPM — Irará</option>
+    <option value="98ªCIPM">98ª CIPM — Ipirá</option>
+    <option value="99ªCIPM">99ª CIPM — Amargosa</option>
+  </optgroup>
+  <optgroup label="Companhias Táticas e Especializadas">
+    <option value="CIPE Caatinga">CIPE Caatinga</option>
+    <option value="CIPE Cacaueira">CIPE Cacaueira</option>
+    <option value="CIPE Central">CIPE Central</option>
+    <option value="CIPE Cerrado">CIPE Cerrado</option>
+    <option value="CIPE Chapada">CIPE Chapada</option>
+    <option value="CIPE Litoral Norte">CIPE Litoral Norte</option>
+    <option value="CIPE Mata Atlântica">CIPE Mata Atlântica</option>
+    <option value="CIPE Nordeste">CIPE Nordeste</option>
+    <option value="CIPE Polo Industrial">CIPE Polo Industrial</option>
+    <option value="CIPE Semiárido">CIPE Semiárido</option>
+    <option value="CIPE Sudoeste">CIPE Sudoeste</option>
+    <option value="CIPT Atlântico">CIPT Atlântico (RONDESP)</option>
+    <option value="CIPT Baía de Todos os Santos">CIPT Baía de Todos os Santos (RONDESP)</option>
+    <option value="CIPT Central">CIPT Central (RONDESP)</option>
+    <option value="CIPT Região Metropolitana de Salvador">CIPT Região Metropolitana de Salvador (RONDESP)</option>
+    <option value="CIPT Leste">CIPT Leste (RONDESP)</option>
+    <option value="CIPT Sul">CIPT Sul (RONDESP)</option>
+    <option value="CIPT Norte">CIPT Norte (RONDESP)</option>
+    <option value="CIPT Oeste">CIPT Oeste (RONDESP)</option>
+    <option value="CIPT Sudoeste">CIPT Sudoeste (RONDESP)</option>
+    <option value="CIPT Chapada">CIPT Chapada (RONDESP)</option>
+    <option value="CIPRv Itabuna">CIPRv — Itabuna</option>
+    <option value="CIPRv Brumado">CIPRv — Brumado</option>
+    <option value="CIPRv Barreiras">CIPRv — Barreiras</option>
+    <option value="COPPA">COPPA — Proteção Ambiental (Parque Pituaçu, Salvador)</option>
+  </optgroup>
+  <optgroup label="Outra">
+    <option value="__custom__">Outra unidade (digitar)</option>
+  </optgroup>
+</select>
+<input type="text" id="unidadeCustom" placeholder="Digite a unidade (ex.: 19°BPM)" style="display:none; margin-top:8px;">
+<div class="hint">Cabeçalho gerado: <span id="cabecalhoPreview">*PMBA/CPR-MRC/19°BPM*</span></div>
+
+<div class="section-label">Identificação</div>
+<label class="first">Data do fato</label>
+<input type="date" id="data">
+
+<label>Local</label>
+<input type="text" id="local" placeholder="Ex.: Rua das Flores, Bairro Novo Horizonte">
+
+<label>Cidade</label>
+<input type="text" id="cidade" placeholder="Ex.: Feira de Santana">
+
+<div class="section-label">Release</div>
+<label class="first">Título do delito / situação</label>
+<input type="text" id="titulo" placeholder="Ex.: PRISÃO EM FLAGRANTE POR TRÁFICO DE DROGAS">
+
+<label>Narrativa da ocorrência</label>
+<textarea id="narrativa" placeholder="Descreva de forma impessoal e cronológica: horário, guarnição em ronda/atendimento, denúncia/atitude suspeita, abordagem, apreensão e condução à delegacia."></textarea>
+<div class="hint">O texto entra exatamente como digitado — revise antes de gerar.</div>
+
+<div class="section-label">Conduzido(s)</div>
+<div class="chip-list" id="conduzidosList"></div>
+<button class="add-btn" id="addConduzido" type="button">+ adicionar conduzido</button>
+
+<div class="section-label">Vítima(s)</div>
+<div class="chip-list" id="vitimasList"></div>
+<button class="add-btn" id="addVitima" type="button">+ adicionar vítima</button>
+
+<div class="section-label">Material apreendido</div>
+<div class="chip-list" id="materiaisList"></div>
+<button class="add-btn" id="addMaterial" type="button">+ adicionar item</button>
+
+<div class="section-label">Registro</div>
+<label class="first">Número da ocorrência</label>
+<input type="text" id="numOcorrencia" placeholder="Ex.: 2026-045678">
+
+<div class="btn-row">
+  <button class="generate-btn" id="generateBtn" type="button">Gerar release</button>
+  <button class="clear-btn" id="clearBtn" type="button" title="Limpar todos os campos">Limpar</button>
+</div>
+
+<div class="output-wrap" id="outputWrap">
+  <div class="section-label">Pré-visualização</div>
+  <div class="output-card">
+    <button class="quick-copy-btn" id="quickCopyBtn" type="button" title="Copiar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="12" height="12" rx="1.5"/>
+        <path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>
+      </svg>
+      <span>Copiar</span>
+    </button>
+    <pre id="outputText"></pre>
+  </div>
+  <button class="copy-btn" id="copyBtn" type="button">Copiar texto formatado</button>
+</div>
+
+<div class="notepad">
+  <div class="section-label first">Bloco de notas — releases salvos</div>
+  <div id="notepadList"></div>
+  <button class="clear-history-btn" id="clearHistoryBtn" type="button">apagar todo o histórico</button>
+</div>
+
+
+<script>
+function el(id){ return document.getElementById(id); }
+
+function makeConduzidoChip(){
+  const div = document.createElement('div');
+  div.className = 'chip';
+  div.innerHTML = `
+    <input type="text" placeholder="Nome completo" class="cond-nome">
+    <input type="number" placeholder="Idade" class="cond-idade" min="0">
+    <button class="chip-remove" type="button" title="Remover">×</button>
+  `;
+  div.querySelector('.chip-remove').addEventListener('click', () => div.remove());
+  return div;
+}
+
+function makeMaterialChip(){
+  const div = document.createElement('div');
+  div.className = 'chip single';
+  div.innerHTML = `
+    <input type="text" placeholder="Ex.: 12 pinos de cocaína" class="mat-item">
+    <button class="chip-remove" type="button" title="Remover">×</button>
+  `;
+  div.querySelector('.chip-remove').addEventListener('click', () => div.remove());
+  return div;
+}
+
+function makeVitimaChip(){
+  const div = document.createElement('div');
+  div.className = 'chip';
+  div.innerHTML = `
+    <input type="text" placeholder="Nome completo" class="vit-nome">
+    <input type="number" placeholder="Idade" class="vit-idade" min="0">
+    <button class="chip-remove" type="button" title="Remover">×</button>
+  `;
+  div.querySelector('.chip-remove').addEventListener('click', () => div.remove());
+  return div;
+}
+
+el('addConduzido').addEventListener('click', () => {
+  el('conduzidosList').appendChild(makeConduzidoChip());
+});
+el('addMaterial').addEventListener('click', () => {
+  el('materiaisList').appendChild(makeMaterialChip());
+});
+el('addVitima').addEventListener('click', () => {
+  el('vitimasList').appendChild(makeVitimaChip());
+});
+
+// start with one of each — mesmo padrão de conduzido/material; se ficar vazio, some do texto final
+el('conduzidosList').appendChild(makeConduzidoChip());
+el('materiaisList').appendChild(makeMaterialChip());
+el('vitimasList').appendChild(makeVitimaChip());
+
+function formatDate(iso){
+  if(!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function buildRelease(){
+  const data = formatDate(el('data').value);
+  const local = el('local').value.trim();
+  const cidade = el('cidade').value.trim();
+  const titulo = el('titulo').value.trim().toUpperCase();
+  const narrativa = el('narrativa').value.trim();
+  const numOcorrencia = el('numOcorrencia').value.trim();
+
+  const conduzidos = Array.from(document.querySelectorAll('#conduzidosList .chip'))
+    .map(chip => {
+      const nome = chip.querySelector('.cond-nome').value.trim();
+      const idade = chip.querySelector('.cond-idade').value.trim();
+      if(!nome) return null;
+      return idade ? `${nome}, ${idade} anos` : nome;
+    })
+    .filter(Boolean);
+
+  const vitimas = Array.from(document.querySelectorAll('#vitimasList .chip'))
+    .map(chip => {
+      const nome = chip.querySelector('.vit-nome').value.trim();
+      const idade = chip.querySelector('.vit-idade').value.trim();
+      if(!nome) return null;
+      return idade ? `${nome}, ${idade} anos` : nome;
+    })
+    .filter(Boolean);
+
+  const materiais = Array.from(document.querySelectorAll('#materiaisList .chip'))
+    .map(chip => chip.querySelector('.mat-item').value.trim())
+    .filter(Boolean);
+
+  const headerLines = [];
+  if(data) headerLines.push(`*DATA:* ${data}`);
+  if(local) headerLines.push(`*LOCAL:* ${local} `);
+  if(cidade) headerLines.push(`*CIDADE:* ${cidade} `);
+  const headerBlock = headerLines.join('\n');
+
+  const blocks = [];
+  const cprSel = el('cpr').value;
+  const unidade = getUnidade();
+  blocks.push(`*PMBA/${cprSel}/${unidade}* `);
+  if(headerBlock) blocks.push(headerBlock);
+
+  const releaseParts = ['*RELEASE*'];
+  if(titulo) releaseParts.push(titulo);
+  if(narrativa) releaseParts.push(narrativa);
+  blocks.push(releaseParts.join('\n\n'));
+
+  if(conduzidos.length){
+    const conduzidosBlock = conduzidos.map(c => `- ${c}`).join('\n');
+    blocks.push(` *CONDUZIDO:* \n \n${conduzidosBlock}`);
+  }
+
+  if(vitimas.length){
+    const vitimasBlock = vitimas.map(v => `- ${v}`).join('\n');
+    blocks.push(` *VÍTIMA:* \n \n${vitimasBlock}`);
+  }
+
+  if(materiais.length){
+    const materiaisBlock = materiais.map(m => `◾ ${m}`).join('\n');
+    blocks.push(` *MATERIAL APREENDIDO:* \n\n${materiaisBlock}`);
+  }
+
+  if(numOcorrencia) blocks.push(`*OCORRÊNCIA:* ${numOcorrencia}`);
+
+  blocks.push('*PMBA, uma Força a serviço do cidadão!*');
+
+  return blocks.join('\n\n\n');
+}
+
+el('generateBtn').addEventListener('click', () => {
+  const text = buildRelease();
+  el('outputText').textContent = text;
+  el('outputWrap').classList.add('show');
+  el('outputWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+  el('copyBtn').classList.remove('copied');
+  el('copyBtn').textContent = 'Copiar texto formatado';
+  el('quickCopyBtn').classList.remove('copied');
+  el('quickCopyBtn').querySelector('span').textContent = 'Copiar';
+  saveToHistory(text);
+});
+
+el('clearBtn').addEventListener('click', () => {
+  el('data').value = '';
+  el('local').value = '';
+  el('cidade').value = '';
+  el('titulo').value = '';
+  el('narrativa').value = '';
+  el('numOcorrencia').value = '';
+
+  el('conduzidosList').innerHTML = '';
+  el('conduzidosList').appendChild(makeConduzidoChip());
+  el('vitimasList').innerHTML = '';
+  el('vitimasList').appendChild(makeVitimaChip());
+  el('materiaisList').innerHTML = '';
+  el('materiaisList').appendChild(makeMaterialChip());
+
+  el('outputWrap').classList.remove('show');
+  el('outputText').textContent = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+async function copyTextRobust(text){
+  // 1ª tentativa: API moderna de clipboard (precisa de contexto seguro/https)
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch(e){ /* segue pro fallback */ }
+  }
+  // 2ª tentativa: campo de texto invisível + execCommand (funciona em mais WebViews/APKs)
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok) return true;
+  } catch(e){ /* segue pro retorno false */ }
+  return false;
+}
+
+async function copyOutputText(triggerBtn, restoreLabel){
+  const text = el('outputText').textContent;
+  const labelEl = triggerBtn.querySelector('span') || triggerBtn;
+  const ok = await copyTextRobust(text);
+  if(ok){
+    triggerBtn.classList.add('copied');
+    labelEl.textContent = '✓ Copiado';
+  } else {
+    labelEl.textContent = 'Não foi possível copiar';
+  }
+  setTimeout(() => {
+    triggerBtn.classList.remove('copied');
+    labelEl.textContent = restoreLabel;
+  }, 1800);
+}
+
+el('copyBtn').addEventListener('click', () => {
+  copyOutputText(el('copyBtn'), 'Copiar texto formatado');
+});
+
+el('quickCopyBtn').addEventListener('click', () => {
+  copyOutputText(el('quickCopyBtn'), 'Copiar');
+});
+
+/* ---------- Bloco de notas / histórico persistente ---------- */
+const HISTORY_KEY = 'releases_19bpm_historico';
+let memoryHistory = []; // fallback caso localStorage esteja indisponível
+let storageOK = true;
+
+function loadHistory(){
+  try{
+    const raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e){
+    storageOK = false;
+    return memoryHistory;
+  }
+}
+
+function saveHistoryArr(arr){
+  try{
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(arr));
+  } catch(e){
+    storageOK = false;
+    memoryHistory = arr;
+  }
+}
+
+function saveToHistory(text){
+  if(!text || !text.trim()) return;
+  const history = loadHistory();
+  const tituloEl = el('titulo').value.trim();
+  const localEl = el('local').value.trim();
+  const preview = tituloEl || localEl || 'Release sem título';
+  const now = new Date();
+  history.unshift({
+    id: now.getTime() + Math.random().toString(36).slice(2,7),
+    preview: preview,
+    savedAt: now.toLocaleString('pt-BR'),
+    text: text
+  });
+  saveHistoryArr(history);
+  renderHistory();
+}
+
+function deleteFromHistory(id){
+  const history = loadHistory().filter(item => item.id !== id);
+  saveHistoryArr(history);
+  renderHistory();
+}
+
+function renderHistory(){
+  const history = loadHistory();
+  const container = el('notepadList');
+  const clearBtn = el('clearHistoryBtn');
+
+  if(!history.length){
+    container.innerHTML = '<div class="notepad-empty">Nenhum release salvo ainda.<br>Toda vez que você gerar um release, ele fica guardado aqui.</div>';
+    clearBtn.style.display = 'none';
+    return;
+  }
+
+  clearBtn.style.display = 'block';
+  container.innerHTML = '';
+
+  history.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'note-item';
+    div.innerHTML = `
+      <div class="note-head">
+        <div class="note-head-text">
+          <div class="note-title">${escapeHtml(item.preview)}</div>
+          <div class="note-meta">${escapeHtml(item.savedAt)}</div>
+        </div>
+        <div class="note-chevron">▸</div>
+      </div>
+      <div class="note-body">
+        <pre>${escapeHtml(item.text)}</pre>
+        <div class="note-actions">
+          <button class="note-copy" type="button">Copiar</button>
+          <button class="note-delete" type="button" title="Excluir">×</button>
+        </div>
+      </div>
+    `;
+
+    div.querySelector('.note-head').addEventListener('click', () => {
+      div.classList.toggle('open');
+    });
+
+    const copyBtn = div.querySelector('.note-copy');
+    copyBtn.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      const ok = await copyTextRobust(item.text);
+      if(ok){
+        copyBtn.classList.add('copied');
+        copyBtn.textContent = '✓ copiado';
+      } else {
+        copyBtn.textContent = 'Não foi possível copiar';
+      }
+      setTimeout(() => {
+        copyBtn.classList.remove('copied');
+        copyBtn.textContent = 'Copiar';
+      }, 1800);
+    });
+
+    div.querySelector('.note-delete').addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      deleteFromHistory(item.id);
+    });
+
+    container.appendChild(div);
+  });
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+el('clearHistoryBtn').addEventListener('click', () => {
+  const btn = el('clearHistoryBtn');
+  saveHistoryArr([]);
+  el('notepadList').innerHTML = '<div class="notepad-empty">Nenhum release salvo ainda.<br>Toda vez que você gerar um release, ele fica guardado aqui.</div>';
+  btn.textContent = '✓ histórico apagado';
+  setTimeout(() => {
+    renderHistory();
+  }, 1400);
+});
+
+/* ---------- Unidade: preview do cabeçalho + memória da escolha ---------- */
+const UNIT_KEY = 'releases_19bpm_unidade';
+
+function getUnidade(){
+  const v = el('unidade').value;
+  if(v === '__custom__'){
+    return el('unidadeCustom').value.trim() || '19°BPM';
+  }
+  return v;
+}
+
+function updateUnitPreview(){
+  const cprSel = el('cpr').value;
+  const isCustom = el('unidade').value === '__custom__';
+  el('unidadeCustom').style.display = isCustom ? 'block' : 'none';
+
+  const unidade = getUnidade();
+  el('cabecalhoPreview').textContent = `*PMBA/${cprSel}/${unidade}*`;
+  try{
+    localStorage.setItem(UNIT_KEY, JSON.stringify({
+      cpr: cprSel,
+      unidade: el('unidade').value,
+      unidadeCustom: el('unidadeCustom').value
+    }));
+  } catch(e){}
+}
+
+function restoreUnit(){
+  try{
+    const raw = localStorage.getItem(UNIT_KEY);
+    if(raw){
+      const saved = JSON.parse(raw);
+      if(saved.cpr) el('cpr').value = saved.cpr;
+      if(saved.unidade) el('unidade').value = saved.unidade;
+      if(saved.unidadeCustom) el('unidadeCustom').value = saved.unidadeCustom;
+    }
+  } catch(e){}
+  updateUnitPreview();
+}
+
+el('cpr').addEventListener('change', updateUnitPreview);
+el('unidade').addEventListener('change', updateUnitPreview);
+el('unidadeCustom').addEventListener('input', updateUnitPreview);
+restoreUnit();
+
+renderHistory();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
