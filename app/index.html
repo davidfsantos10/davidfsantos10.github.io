@@ -33,6 +33,7 @@
   }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; }
+  html{ color-scheme: dark; }
   body{
     background: var(--bg);
     color: var(--ink);
@@ -105,7 +106,7 @@
   }
   label.first{ margin-top:0; }
 
-  input[type=text], input[type=date], input[type=number], textarea{
+  input[type=text], input[type=date], input[type=time], input[type=number], textarea{
     width:100%;
     background: var(--panel);
     border: 1px solid var(--line);
@@ -832,17 +833,24 @@
   </optgroup>
 </select>
 <input type="text" id="unidadeCustom" placeholder="Digite a unidade (ex.: 19°BPM)" style="display:none; margin-top:8px;">
-<div class="hint">Cabeçalho gerado: <span id="cabecalhoPreview">*PMBA/CPR-MRC/19°BPM*</span></div>
+<div class="hint">Cabeçalho gerado: <span id="cabecalhoPreview">*PMBA - COPPM - CPR-MRC - 19°BPM*</span></div>
 
 <div class="section-label">Identificação</div>
 <label class="first">Data do fato</label>
 <input type="date" id="data">
+
+<label>Hora do fato</label>
+<input type="time" id="hora">
 
 <label>Local</label>
 <input type="text" id="local" placeholder="Ex.: Rua das Flores, Bairro Novo Horizonte">
 
 <label>Cidade</label>
 <input type="text" id="cidade" placeholder="Ex.: Feira de Santana">
+
+<label>Recursos empregados</label>
+<input type="text" id="recursos" placeholder="Ex.: 1 guarnição policial, prefixo 190123">
+<div class="hint">Quantidade de guarnições, prefixos das viaturas ou, se for operação extraordinária (remunerada), o nome da operação.</div>
 
 <div class="section-label">Release</div>
 <label class="first">Título do delito / situação</label>
@@ -860,6 +868,7 @@
 <div class="section-label">Vítima(s)</div>
 <div class="chip-list" id="vitimasList"></div>
 <button class="add-btn" id="addVitima" type="button">+ adicionar vítima</button>
+<div class="hint">No release final, conduzido(s) e vítima(s) saem juntos em "ENVOLVIDOS", só com iniciais + idade + autor/vítima — nunca o nome completo.</div>
 
 <div class="section-label">Material apreendido</div>
 <div class="chip-list" id="materiaisList"></div>
@@ -972,10 +981,22 @@ function formatDate(iso){
   return `${d}/${m}/${y}`;
 }
 
+function toInitials(fullName){
+  const stopWords = ['da','de','do','das','dos','e'];
+  return fullName
+    .trim()
+    .split(/\s+/)
+    .filter((w) => w && !stopWords.includes(w.toLowerCase()))
+    .map((w) => w[0].toUpperCase() + '.')
+    .join(' ');
+}
+
 function buildRelease(){
   const data = formatDate(el('data').value);
+  const hora = el('hora').value.trim();
   const local = el('local').value.trim();
   const cidade = el('cidade').value.trim();
+  const recursos = el('recursos').value.trim();
   const titulo = el('titulo').value.trim().toUpperCase();
   const narrativa = el('narrativa').value.trim();
   const numOcorrencia = el('numOcorrencia').value.trim();
@@ -985,7 +1006,8 @@ function buildRelease(){
       const nome = chip.querySelector('.cond-nome').value.trim();
       const idade = chip.querySelector('.cond-idade').value.trim();
       if(!nome) return null;
-      return idade ? `${nome}, ${idade} anos` : nome;
+      const iniciais = toInitials(nome);
+      return idade ? `${iniciais}, ${idade} anos — autor` : `${iniciais} — autor`;
     })
     .filter(Boolean);
 
@@ -994,47 +1016,51 @@ function buildRelease(){
       const nome = chip.querySelector('.vit-nome').value.trim();
       const idade = chip.querySelector('.vit-idade').value.trim();
       if(!nome) return null;
-      return idade ? `${nome}, ${idade} anos` : nome;
+      const iniciais = toInitials(nome);
+      return idade ? `${iniciais}, ${idade} anos — vítima` : `${iniciais} — vítima`;
     })
     .filter(Boolean);
+
+  const envolvidos = [...conduzidos, ...vitimas];
 
   const materiais = Array.from(document.querySelectorAll('#materiaisList .chip'))
     .map(chip => chip.querySelector('.mat-item').value.trim())
     .filter(Boolean);
 
   const headerLines = [];
-  if(data) headerLines.push(`*DATA:* ${data}`);
-  if(local) headerLines.push(`*LOCAL:* ${local} `);
-  if(cidade) headerLines.push(`*CIDADE:* ${cidade} `);
+  if(data) headerLines.push(`◼️ *DATA:* ${data}`);
+  if(hora) headerLines.push(`◼️ *HORA:* ${hora}`);
+  if(local) headerLines.push(`◼️ *LOCAL:* ${local}`);
+  if(cidade) headerLines.push(`◼️ *CIDADE:* ${cidade}`);
+  if(recursos) headerLines.push(`◼️ *RECURSOS:* ${recursos}`);
   const headerBlock = headerLines.join('\n');
 
   const blocks = [];
   const cprSel = el('cpr').value;
   const unidade = getUnidade();
-  blocks.push(`*PMBA/${cprSel}/${unidade}* `);
+  blocks.push(`*PMBA - COPPM - ${cprSel} - ${unidade}*`);
   if(headerBlock) blocks.push(headerBlock);
 
-  const releaseParts = ['*RELEASE*'];
-  if(titulo) releaseParts.push(titulo);
-  if(narrativa) releaseParts.push(narrativa);
-  blocks.push(releaseParts.join('\n\n'));
-
-  if(conduzidos.length){
-    const conduzidosBlock = conduzidos.map(c => `- ${c}`).join('\n');
-    blocks.push(` *CONDUZIDO:* \n \n${conduzidosBlock}`);
-  }
-
-  if(vitimas.length){
-    const vitimasBlock = vitimas.map(v => `- ${v}`).join('\n');
-    blocks.push(` *VÍTIMA:* \n \n${vitimasBlock}`);
-  }
+  const resumoParts = ['◼️ *RESUMO*'];
+  if(titulo) resumoParts.push(titulo);
+  if(narrativa) resumoParts.push(narrativa);
+  blocks.push(resumoParts.join('\n\n'));
 
   if(materiais.length){
-    const materiaisBlock = materiais.map(m => `◾ ${m}`).join('\n');
-    blocks.push(` *MATERIAL APREENDIDO:* \n\n${materiaisBlock}`);
+    const materiaisBlock = materiais
+      .map((m, i) => `◾ ${m}${i === materiais.length - 1 ? '.' : ';'}`)
+      .join('\n');
+    blocks.push(`✅ *MATERIAL APREENDIDO:*\n\n${materiaisBlock}`);
+  }
+
+  if(envolvidos.length){
+    const envolvidosBlock = envolvidos.map(e => `◼️ ${e}`).join('\n');
+    blocks.push(`✅ *ENVOLVIDOS:*\n\n${envolvidosBlock}`);
   }
 
   if(numOcorrencia) blocks.push(`*OCORRÊNCIA:* ${numOcorrencia}`);
+
+  blocks.push(`*FONTE:* ASCOM/${unidade}`);
 
   blocks.push('*PMBA, uma Força a serviço do cidadão!*');
 
@@ -1055,8 +1081,10 @@ el('generateBtn').addEventListener('click', () => {
 
 el('clearBtn').addEventListener('click', () => {
   el('data').value = '';
+  el('hora').value = '';
   el('local').value = '';
   el('cidade').value = '';
+  el('recursos').value = '';
   el('titulo').value = '';
   el('narrativa').value = '';
   el('numOcorrencia').value = '';
@@ -1267,7 +1295,7 @@ function updateUnitPreview(){
   el('unidadeCustom').style.display = isCustom ? 'block' : 'none';
 
   const unidade = getUnidade();
-  el('cabecalhoPreview').textContent = `*PMBA/${cprSel}/${unidade}*`;
+  el('cabecalhoPreview').textContent = `*PMBA - COPPM - ${cprSel} - ${unidade}*`;
   try{
     localStorage.setItem(UNIT_KEY, JSON.stringify({
       cpr: cprSel,
