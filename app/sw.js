@@ -1,4 +1,4 @@
-const CACHE_NAME = "release-19bpm-v1";
+const CACHE_NAME = "release-19bpm-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -23,8 +23,17 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Rede primeiro (sempre busca a versão mais nova quando online),
+// caindo para o cache apenas se estiver offline. Isso evita que o
+// app fique "preso" numa versão antiga depois de uma atualização.
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
