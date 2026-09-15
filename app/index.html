@@ -423,6 +423,191 @@
     font-weight: 700;
     font-size: 12px;
   }
+
+  /* ---------- Seletor customizado (CPR / Batalhão) ---------- */
+  .native-select-hidden{
+    position:absolute;
+    width:1px; height:1px;
+    opacity:0; overflow:hidden;
+    pointer-events:none;
+  }
+  .field-trigger{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    text-align:left;
+    padding: 10px 11px;
+    cursor:pointer;
+    transition: border-color .15s;
+  }
+  .field-trigger:active{ background: var(--panel-raised); }
+  .field-trigger:focus-visible{ border-color: var(--khaki); }
+  .field-trigger-label{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .field-trigger-chevron{
+    flex-shrink:0;
+    width:11px; height:11px;
+    color: var(--khaki);
+  }
+
+  .picker-overlay{
+    position:fixed; inset:0;
+    background: rgba(10,12,13,0.72);
+    display:flex;
+    align-items:flex-end;
+    z-index:100;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .18s ease;
+  }
+  .picker-overlay.open{ opacity:1; pointer-events:auto; }
+
+  .picker-sheet{
+    width:100%;
+    max-height:86vh;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    border-radius: 10px 10px 0 0;
+    display:flex;
+    flex-direction:column;
+    transform: translateY(16px);
+    opacity:0;
+    transition: transform .2s cubic-bezier(.2,.7,.3,1), opacity .2s ease;
+  }
+  .picker-overlay.open .picker-sheet{ transform: translateY(0); opacity:1; }
+
+  .picker-header{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:18px 16px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .picker-header-icon{
+    width:30px; height:30px;
+    flex-shrink:0;
+    border-radius:50%;
+    border:1.5px solid var(--brass);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .picker-header-icon svg{ width:15px; height:15px; color: var(--brass); }
+  .picker-header-text{ flex:1; min-width:0; padding-top:1px; }
+  .picker-eyebrow{
+    font-family: var(--mono);
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color: var(--khaki);
+  }
+  .picker-title{
+    font-size:16px;
+    font-weight:700;
+    color: var(--ink);
+    margin-top:2px;
+    line-height:1.25;
+  }
+  .picker-close{
+    flex-shrink:0;
+    width:30px; height:30px;
+    background:none;
+    border:1px solid var(--line);
+    color: var(--ink-dim);
+    border-radius:3px;
+    font-size:15px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .picker-close:hover{ border-color: var(--danger); color: var(--danger); }
+
+  .picker-search-wrap{
+    position:relative;
+    padding:12px 16px;
+    border-bottom:1px solid var(--line);
+    flex-shrink:0;
+  }
+  .picker-search-icon{
+    position:absolute;
+    left:27px; top:50%;
+    transform:translateY(-50%);
+    width:14px; height:14px;
+    color: var(--ink-dim);
+    pointer-events:none;
+  }
+  input.picker-search{
+    width:100%;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 14.5px;
+    padding: 10px 11px 10px 46px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .picker-search:focus{ border-color: var(--khaki); }
+  .picker-search::placeholder{ color:#565d5f; }
+
+  .picker-list{
+    overflow-y:auto;
+    padding:8px 12px 22px;
+    flex:1;
+  }
+  .picker-group-label{
+    font-family: var(--mono);
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color: var(--khaki);
+    padding:14px 8px 6px;
+  }
+  .picker-item{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background: var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size:14px;
+    text-align:left;
+    padding:12px 12px;
+    margin-bottom:6px;
+    cursor:pointer;
+    transition: background-color .1s, border-color .15s;
+  }
+  .picker-item:active{ background: var(--panel-raised); }
+  .picker-item.selected{
+    border-color: var(--brass);
+    background: linear-gradient(0deg, rgba(201,178,107,0.09), rgba(201,178,107,0.09)), var(--panel);
+    box-shadow: 0 0 0 1px rgba(201,178,107,0.25);
+  }
+  .picker-item-check{
+    flex-shrink:0;
+    width:16px; height:16px;
+    color: var(--brass);
+  }
+  .picker-empty{
+    text-align:center;
+    color: var(--ink-dim);
+    font-size:13px;
+    padding:26px 10px;
+  }
 </style>
 </head>
 <body>
@@ -440,7 +625,11 @@
 
 <div class="section-label first">Unidade</div>
 <label class="first">Comando de Policiamento Regional (CPR)</label>
-<select id="cpr">
+<button type="button" class="field-trigger" id="cprTrigger" data-picker="cpr">
+  <span class="field-trigger-label" id="cprTriggerLabel">Selecione</span>
+  <svg class="field-trigger-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+</button>
+<select id="cpr" class="native-select-hidden" tabindex="-1" aria-hidden="true">
   <option value="CPRC-A">CPRC-A (Atlântico) — Salvador</option>
   <option value="CPRC-C">CPRC-C (Central) — Salvador</option>
   <option value="CPRC-BTS">CPRC-BTS (Baía de Todos os Santos) — Salvador</option>
@@ -459,7 +648,11 @@
 </select>
 
 <label>Batalhão / Companhia Independente</label>
-<select id="unidade">
+<button type="button" class="field-trigger" id="unidadeTrigger" data-picker="unidade">
+  <span class="field-trigger-label" id="unidadeTriggerLabel">Selecione</span>
+  <svg class="field-trigger-chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l4 4 4-4"/></svg>
+</button>
+<select id="unidade" class="native-select-hidden" tabindex="-1" aria-hidden="true">
   <optgroup label="Batalhões de Polícia Militar (BPM)">
     <option value="4°BPM">4º BPM — Alagoinhas</option>
     <option value="5°BPM">5º BPM — Euclides da Cunha</option>
@@ -695,6 +888,23 @@
   <button class="clear-history-btn" id="clearHistoryBtn" type="button">apagar todo o histórico</button>
 </div>
 
+<div class="picker-overlay" id="pickerOverlay">
+  <div class="picker-sheet">
+    <div class="picker-header">
+      <div class="picker-header-icon" id="pickerHeaderIcon"></div>
+      <div class="picker-header-text">
+        <div class="picker-eyebrow" id="pickerEyebrow">Unidade</div>
+        <div class="picker-title" id="pickerTitle">Selecione</div>
+      </div>
+      <button class="picker-close" id="pickerClose" type="button" aria-label="Fechar">✕</button>
+    </div>
+    <div class="picker-search-wrap">
+      <svg class="picker-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" class="picker-search" id="pickerSearch" placeholder="Buscar...">
+    </div>
+    <div class="picker-list" id="pickerList"></div>
+  </div>
+</div>
 
 <script>
 function el(id){ return document.getElementById(id); }
@@ -1058,6 +1268,7 @@ function updateUnitPreview(){
       unidadeCustom: el('unidadeCustom').value
     }));
   } catch(e){}
+  syncTriggerLabels();
 }
 
 function restoreUnit(){
@@ -1077,6 +1288,135 @@ el('cpr').addEventListener('change', updateUnitPreview);
 el('unidade').addEventListener('change', updateUnitPreview);
 el('unidadeCustom').addEventListener('input', updateUnitPreview);
 restoreUnit();
+
+/* ---------- Seletor customizado (modal com busca) para CPR e Batalhão ---------- */
+const PICKER_ICONS = {
+  cpr: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></svg>',
+  unidade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.2 8.4-7 10-3.8-1.6-7-5-7-10V6z"/></svg>'
+};
+const PICKER_META = {
+  cpr: { eyebrow: 'Unidade', title: 'Comando de Policiamento Regional (CPR)' },
+  unidade: { eyebrow: 'Unidade', title: 'Batalhão / Companhia Independente' }
+};
+
+function normalizeSearch(str){
+  return (str || '').toString().normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+}
+
+function syncTriggerLabels(){
+  ['cpr', 'unidade'].forEach((id) => {
+    const select = el(id);
+    const trigger = el(id + 'TriggerLabel');
+    if(!select || !trigger) return;
+    const opt = select.options[select.selectedIndex];
+    let text = opt ? opt.textContent : 'Selecione';
+    if(id === 'unidade' && select.value === '__custom__'){
+      const custom = el('unidadeCustom').value.trim();
+      text = custom ? `Outra: ${custom}` : 'Outra unidade (digitar)';
+    }
+    trigger.textContent = text;
+  });
+}
+
+function buildPickerGroups(selectEl){
+  const groups = [];
+  let current = { label: null, items: [] };
+  Array.from(selectEl.children).forEach((node) => {
+    if(node.tagName === 'OPTGROUP'){
+      if(current.items.length) groups.push(current);
+      current = { label: node.label, items: [] };
+      Array.from(node.children).forEach((opt) => {
+        current.items.push({ value: opt.value, text: opt.textContent });
+      });
+      groups.push(current);
+      current = { label: null, items: [] };
+    } else if(node.tagName === 'OPTION'){
+      current.items.push({ value: node.value, text: node.textContent });
+    }
+  });
+  if(current.items.length) groups.push(current);
+  return groups;
+}
+
+let activePickerId = null;
+
+function renderPickerList(filterText){
+  const selectEl = el(activePickerId);
+  const listEl = el('pickerList');
+  const groups = buildPickerGroups(selectEl);
+  const query = normalizeSearch(filterText);
+  const currentValue = selectEl.value;
+
+  listEl.innerHTML = '';
+  let anyMatch = false;
+
+  groups.forEach((group) => {
+    const items = group.items.filter((item) => !query || normalizeSearch(item.text).includes(query));
+    if(!items.length) return;
+    anyMatch = true;
+    if(group.label){
+      const groupLabel = document.createElement('div');
+      groupLabel.className = 'picker-group-label';
+      groupLabel.textContent = group.label;
+      listEl.appendChild(groupLabel);
+    }
+    items.forEach((item) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'picker-item' + (item.value === currentValue ? ' selected' : '');
+      btn.dataset.value = item.value;
+      const span = document.createElement('span');
+      span.className = 'field-trigger-label';
+      span.textContent = item.text;
+      btn.appendChild(span);
+      if(item.value === currentValue){
+        btn.insertAdjacentHTML('beforeend', '<svg class="picker-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>');
+      }
+      btn.addEventListener('click', () => selectPickerValue(item.value));
+      listEl.appendChild(btn);
+    });
+  });
+
+  if(!anyMatch){
+    listEl.innerHTML = '<div class="picker-empty">Nenhum resultado encontrado.</div>';
+  }
+}
+
+function selectPickerValue(value){
+  const selectEl = el(activePickerId);
+  selectEl.value = value;
+  selectEl.dispatchEvent(new Event('change'));
+  closePicker();
+}
+
+function openPicker(id){
+  activePickerId = id;
+  const meta = PICKER_META[id];
+  el('pickerEyebrow').textContent = meta.eyebrow;
+  el('pickerTitle').textContent = meta.title;
+  el('pickerHeaderIcon').innerHTML = PICKER_ICONS[id];
+  el('pickerSearch').value = '';
+  renderPickerList('');
+  el('pickerOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => el('pickerSearch').focus(), 50);
+}
+
+function closePicker(){
+  el('pickerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  activePickerId = null;
+}
+
+el('cprTrigger').addEventListener('click', () => openPicker('cpr'));
+el('unidadeTrigger').addEventListener('click', () => openPicker('unidade'));
+el('pickerClose').addEventListener('click', closePicker);
+el('pickerOverlay').addEventListener('click', (e) => {
+  if(e.target === el('pickerOverlay')) closePicker();
+});
+el('pickerSearch').addEventListener('input', (e) => renderPickerList(e.target.value));
+
+syncTriggerLabels();
 
 renderHistory();
 
