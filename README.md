@@ -10,12 +10,14 @@ Este guia foi escrito para quem **nunca publicou um site antes** — siga na ord
 
 ```
 davidfsantos10.github.io/
-├── index.html          → Página principal (site inteiro)
+├── index.html          → Página principal (site institucional)
 ├── privacidade.html     → Política de Privacidade (obrigatória para anúncios)
+├── ads.txt              → Autorização do Google AdSense
 ├── assets/
-│   ├── css/style.css    → Todo o visual do site
+│   ├── css/style.css    → Todo o visual do site institucional
 │   ├── js/main.js       → Menu mobile, abas Android/iPhone, FAQ
 │   └── img/             → (vazio) coloque aqui screenshots/ícone reais do app
+├── app/                 → O APLICATIVO em si (formulário de release) — ver seção 8
 └── README.md            → Este guia
 ```
 
@@ -147,7 +149,7 @@ A pasta `assets/img/` está vazia — o site usa um "mockup" de telefone feito s
 
 - [ ] Revisar o texto da `privacidade.html` (está marcado como "[MODELO]") com atenção especial à seção "Quais dados coletamos" — descreva exatamente o que o app faz com os dados preenchidos.
 - [x] E-mail de contato atualizado (`davidpmfsantos@gmail.com`) em `index.html` e `privacidade.html`.
-- [x] Links de download apontando para as páginas de instalação (Netlify) — trocar pelas lojas oficiais quando/se publicar lá.
+- [x] Links de download apontando para as páginas de instalação em `app/` (GitHub Pages) — trocar pelas lojas oficiais quando/se publicar lá.
 - [ ] Publicar o site (GitHub Pages — passo 3).
 - [ ] Cadastrar no Google AdSense e aguardar aprovação (passo 4).
 - [ ] Colar os blocos de anúncio depois da aprovação.
@@ -163,3 +165,40 @@ A pasta `assets/img/` está vazia — o site usa um "mockup" de telefone feito s
 - Depois de qualquer alteração: salve, faça `git add`, `git commit` e `git push` para a branch `main` — o GitHub Pages atualiza sozinho.
 
 Se tiver dúvida em qualquer passo, pode pedir para o Claude te ajudar de novo — é só descrever o que está tentando fazer (ex.: "não sei como configurar o DNS do meu domínio" ou "quero trocar a cor do botão verde").
+
+---
+
+## 8. O aplicativo (pasta `app/`)
+
+Além do site institucional, este repositório também hospeda **o aplicativo em si** — o formulário que gera o texto do release (campos de CPR, Batalhão, conduzidos, histórico, etc.). Ele vive na pasta `app/` e é publicado automaticamente em:
+
+**`https://davidfsantos10.github.io/app/`**
+
+### Por que ele foi movido para aqui
+
+O app originalmente era hospedado no Netlify, editado através do agente de IA integrado ao painel deles. O problema: o plano gratuito do Netlify tem um limite de "créditos operacionais" para esse agente e para publicações em produção — quando esgota, as atualizações ficam paradas até o próximo ciclo de faturamento (ou até fazer upgrade pago).
+
+O GitHub Pages não tem esse tipo de limite para sites estáticos como este, então a partir de agora o app roda por aqui, sem risco de ficar bloqueado por falta de créditos.
+
+### Arquivos dentro de `app/`
+
+```
+app/
+├── index.html              → O aplicativo completo (formulário, lógica, histórico) — tudo em um único arquivo
+├── android.html            → Página de instalação para Android
+├── ios.html                → Página de instalação para iPhone
+├── manifest.json           → Configuração do PWA (nome, ícone, cores)
+├── sw.js                   → Service worker (permite instalar/funcionar offline)
+├── icon-192.png, icon-512.png, icon-maskable-512.png → Ícones do app
+├── robots.txt / sitemap.xml → SEO básico
+```
+
+### Como editar o app a partir de agora
+
+Diferente do Netlify, aqui não existe um "chat com agente de IA" dentro do próprio hospedeiro. As edições passam a ser feitas normalmente aqui com o Claude Code: descreva o que quer mudar (ex.: "quero mudar a cor do botão de gerar release" ou "adiciona um campo X no formulário"), a edição é feita direto no `app/index.html`, e publicada com commit + push — sem limite de créditos.
+
+Como é um único arquivo HTML com CSS e JavaScript embutidos (sem processo de build), qualquer editor de texto também serve para ajustes manuais simples, se preferir fazer você mesmo.
+
+### Se quiser um domínio próprio só para o app
+
+Hoje o app fica em `davidfsantos10.github.io/app/` (um subcaminho do mesmo site). Se no futuro quiser um endereço mais direto (ex.: `app.geradorderelease.com.br`), é possível configurar um domínio próprio apontando especificamente para essa pasta — me avise quando quiser fazer isso.
