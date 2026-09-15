@@ -878,6 +878,9 @@
 <label class="first">Número da ocorrência</label>
 <input type="text" id="numOcorrencia" placeholder="Ex.: 2026-045678">
 
+<label>Fonte</label>
+<input type="text" id="fonte" placeholder="Ex.: ASCOM/19° BPM">
+
 <div class="btn-row">
   <button class="generate-btn" id="generateBtn" type="button">Gerar release</button>
   <button class="clear-btn" id="clearBtn" type="button" title="Limpar todos os campos">Limpar</button>
@@ -1000,6 +1003,7 @@ function buildRelease(){
   const titulo = el('titulo').value.trim().toUpperCase();
   const narrativa = el('narrativa').value.trim();
   const numOcorrencia = el('numOcorrencia').value.trim();
+  const fonte = el('fonte').value.trim();
 
   const conduzidos = Array.from(document.querySelectorAll('#conduzidosList .chip'))
     .map(chip => {
@@ -1059,8 +1063,7 @@ function buildRelease(){
   }
 
   if(numOcorrencia) blocks.push(`*OCORRÊNCIA:* ${numOcorrencia}`);
-
-  blocks.push(`*FONTE:* ASCOM/${unidade}`);
+  if(fonte) blocks.push(`*FONTE:* ${fonte}`);
 
   blocks.push('*PMBA, uma Força a serviço do cidadão!*');
 
@@ -1088,6 +1091,7 @@ el('clearBtn').addEventListener('click', () => {
   el('titulo').value = '';
   el('narrativa').value = '';
   el('numOcorrencia').value = '';
+  el('fonte').value = '';
 
   el('conduzidosList').innerHTML = '';
   el('conduzidosList').appendChild(makeConduzidoChip());
