@@ -1,6 +1,6 @@
 {
-  "name": "Gerador de Release — 19° BPM",
-  "short_name": "Release 19BPM",
+  "name": "Release Fácil",
+  "short_name": "Release Fácil",
   "description": "App para preenchimento automático de releases operacionais no modelo padrão do 19° BPM/PMBA.",
   "start_url": "./index.html",
   "scope": "./",
