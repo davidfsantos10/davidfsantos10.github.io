@@ -1082,6 +1082,7 @@ function buildRelease(){
   if(data) headerLines.push(`◼️ *DATA:* ${data}`);
   if(hora) headerLines.push(`◼️ *HORA:* ${hora}`);
   if(local) headerLines.push(`◼️ *LOCAL:* ${local}`);
+  if(local && localMapLink) headerLines.push(`◼️ *VER NO MAPA:* ${localMapLink}`);
   if(cidade) headerLines.push(`◼️ *CIDADE:* ${cidade}`);
   if(recursos) headerLines.push(`◼️ *RECURSOS:* ${recursos}`);
   const headerBlock = headerLines.join('\n');
@@ -1133,6 +1134,7 @@ el('clearBtn').addEventListener('click', () => {
   el('data').value = '';
   el('hora').value = '';
   el('local').value = '';
+  localMapLink = null;
   el('cidade').value = '';
   el('recursos').value = '';
   el('titulo').value = '';
@@ -1715,6 +1717,11 @@ function loadLeaflet(){
 let geoMap = null;
 let geoMarker = null;
 let geoSelected = null;
+let localMapLink = null;
+
+// se o operador editar o campo Local manualmente, o link do mapa
+// deixa de corresponder ao texto — melhor remover do que ficar errado
+el('local').addEventListener('input', () => { localMapLink = null; });
 
 function placeGeoMarker(lat, lng){
   geoSelected = { lat, lng };
@@ -1814,6 +1821,7 @@ el('geoConfirm').addEventListener('click', async () => {
     // offline ou serviço indisponível: mantém as coordenadas já obtidas
   }
 
+  localMapLink = `https://www.google.com/maps?q=${lat},${lng}`;
   el('local').value = addressText;
   btn.disabled = false;
   btn.textContent = originalText;
